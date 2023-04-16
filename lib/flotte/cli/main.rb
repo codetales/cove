@@ -10,17 +10,21 @@ module Flotte
 
       desc "runit", "Run a command"
       def runit
-        say "test", "blue"
         captured = {}
-        image = "hello-world"
+        image = "alpine"
         container_name = "test-#{SecureRandom.alphanumeric(5)}"
-        on(["root@test"]) do |host|
-          output = capture(*Command::Docker::Container::Run.build(image: image, name: container_name), {verbosity: Logger::INFO})
+        host = "root@test"
+        on(host) do |host|
+          output = capture(*Command::Docker::Container::Run.build(image: image, name: container_name, remove: false, interactive: true), {verbosity: Logger::INFO})
 
           captured[host] = output
         end
 
-        p captured
+        run_locally do
+          command = Flotte::Command::SSH.wrap(host, [:docker, :container, :attach, container_name, ';', "echo", "'42424242'"])
+          info "Running #{command.join(' ')}"
+          Kernel.exec *command
+        end
       end
     end
   end

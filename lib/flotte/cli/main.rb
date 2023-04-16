@@ -3,7 +3,7 @@ module Flotte
     class Main < Thor
       include SSHKit::DSL
 
-      desc "version", "Print the installed version of flotte"
+      desc "version", "Print the installed version of Flotte"
       def version
         puts Flotte::VERSION
       end
@@ -21,9 +21,9 @@ module Flotte
         end
 
         run_locally do
-          command = Flotte::Command::SSH.wrap(host, [:docker, :container, :attach, container_name, ';', "echo", "'42424242'"])
-          info "Running #{command.join(' ')}"
-          Kernel.exec *command
+          command = Flotte::Command::SSH.wrap(host, [:docker, :container, :attach, container_name, ";", "echo", "'42424242'"])
+          info "Running #{command.join(" ")}"
+          Kernel.exec(*command)
         end
       end
 

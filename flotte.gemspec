@@ -31,8 +31,11 @@ Gem::Specification.new do |spec|
 
   # Uncomment to register a new dependency of your gem
   spec.add_dependency "activesupport", "~> 7.0"
+  spec.add_dependency "dotenv", "~> 2.8"
   spec.add_dependency "sshkit", "~> 1.21"
   spec.add_dependency "thor", "~> 1.2"
+  spec.add_dependency "bcrypt_pbkdf", "~> 1.1"
+  spec.add_dependency "ed25519", ">= 1.2", "< 2.0"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

@@ -26,6 +26,15 @@ module Flotte
           Kernel.exec *command
         end
       end
+
+      desc "logs", "Tail logs"
+      def logs
+        host = "root@test"
+        on([host]) do |host|
+          SSHKit.config.output_verbosity = Logger::DEBUG
+          execute :docker, "logs", "-f", "goofy_meitner"
+        end
+      end
     end
   end
 end

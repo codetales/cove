@@ -1,0 +1,9 @@
+defaults:
+  user: root
+
+hosts:
+  - host1
+  - name: host2
+    user: ops
+    connect_via: 1.1.1.1
+  - name: host3

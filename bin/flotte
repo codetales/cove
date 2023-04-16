@@ -3,4 +3,6 @@
 
 require "flotte"
 
+Thread.report_on_exception = false
+
 Flotte::CLI::Main.start(ARGV)

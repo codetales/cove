@@ -13,20 +13,4 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
-
-  def capture_stdout
-    begin
-      original_stdout = $stdout
-      $stdout = StringIO.new
-      yield
-      byebug
-      result = $stdout.read
-    ensure
-      $stdout = STDOUT
-    end
-
-    byebug
-
-    result
-  end
 end

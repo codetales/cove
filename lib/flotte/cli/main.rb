@@ -3,6 +3,10 @@ module Flotte
     class Main < Thor
       include SSHKit::DSL
 
+      def self.exit_on_failure?
+        true
+      end
+
       desc "version", "Print the installed version of Flotte"
       def version
         puts Flotte::VERSION
@@ -35,6 +39,9 @@ module Flotte
           execute :docker, "logs", "-f", "goofy_meitner"
         end
       end
+
+      desc "host", "Host specific commands"
+      subcommand "host", Flotte::CLI::Host
     end
   end
 end

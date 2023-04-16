@@ -4,6 +4,8 @@ require "flotte/host"
 module Flotte
   module Configuration
     class Hosts
+      ALLOWED_DEFAULT_KEYS = ["user"]
+
       def initialize(config_file)
         @config_file = config_file
       end
@@ -27,7 +29,7 @@ module Flotte
       end
 
       def defaults
-        @raw_host_config["defaults"].slice("user")
+        @raw_host_config["defaults"].slice(*ALLOWED_DEFAULT_KEYS)
       end
 
       def load_config

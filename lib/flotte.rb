@@ -11,6 +11,7 @@ require_relative "flotte/host"
 require_relative "flotte/configuration"
 require_relative "flotte/command"
 require_relative "flotte/cli"
+require_relative "flotte/initialization"
 
 module Flotte
   class Error < StandardError; end
@@ -24,10 +25,7 @@ module Flotte
   end
 
   def self.init(config:)
-    host_config = Flotte::Configuration::Hosts.new(File.join(config, "hosts.yml"))
-    host_config.all.each do |host|
-      registry.hosts.add(host)
-    end
+    Flotte::Initialization.new(config, registry).perform
   end
 
   def self.registry

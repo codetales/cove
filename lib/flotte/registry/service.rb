@@ -1,6 +1,6 @@
 module Flotte
   class Registry
-    class Host < Base
+    class Service < Base
     end
   end
 end

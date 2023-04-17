@@ -23,7 +23,7 @@ module Flotte
     @output || $stdout
   end
 
-  def self.init(config: "./")
+  def self.init(config:)
     host_config = Flotte::Configuration::Hosts.new(File.join(config, "hosts.yml"))
     host_config.all.each do |host|
       registry.hosts.add(host)

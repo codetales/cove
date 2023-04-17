@@ -1,5 +1,9 @@
 module Flotte
   class Host < Struct.new(:name, :hostname, :user, keyword_init: true)
+    def ssh_destination_string
+      [user, hostname].compact.join("@")
+    end
+
     def hostname
       super.presence || name
     end

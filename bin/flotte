@@ -5,4 +5,6 @@ require "flotte"
 
 Thread.report_on_exception = false
 
+Flotte.init(config: ENV.fetch("FLOTTE_CONFIG_DIR", "./"))
+
 Flotte::CLI::Main.start(ARGV)

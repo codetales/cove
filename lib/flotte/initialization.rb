@@ -18,7 +18,7 @@ module Flotte
       service_dirs.map do |service_dir|
         Flotte::Configuration::Service.new(File.join(service_dir, "service.yml"))
       end.each do |service_config|
-        @registry.services.add(service_config.service)
+        @registry.services.add(service_config.build)
       end
     end
 

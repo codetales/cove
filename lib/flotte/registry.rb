@@ -1,6 +1,7 @@
 require_relative "registry/base"
 require_relative "registry/host"
 require_relative "registry/service"
+require_relative "registry/role"
 
 module Flotte
   class Registry

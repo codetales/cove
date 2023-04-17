@@ -33,7 +33,7 @@ module Flotte
       end
 
       def load_config
-        @raw_host_config ||= YAML.load(ERB.new(contents).result)
+        @raw_host_config ||= YAML.safe_load(ERB.new(contents).result)
       end
 
       def contents

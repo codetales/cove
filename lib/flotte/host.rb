@@ -1,6 +1,6 @@
 module Flotte
-  class Host < Struct.new(:name, :connect_via, :user, keyword_init: true)
-    def connect_via
+  class Host < Struct.new(:name, :hostname, :user, keyword_init: true)
+    def hostname
       super.presence || name
     end
   end

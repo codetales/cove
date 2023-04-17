@@ -15,8 +15,8 @@ module Flotte
         @hosts_by_name.values
       end
 
-      def each
-        all.each
+      def each(&block)
+        all.each(&block)
       end
 
       def [](name)

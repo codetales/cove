@@ -5,20 +5,23 @@ module Flotte
 
       delegate :size, :each, to: :all
 
-      def initialize
-        @entities_by_name = {}
+      def initialize(entities = [])
+        @entities_by_id = {}
+        Array(entities).each do |entity|
+          add(entity)
+        end
       end
 
-      def add(host)
-        @entities_by_name[host.name] = host
+      def add(entity)
+        @entities_by_id[entity.id] = entity
       end
 
       def all
-        @entities_by_name.values
+        @entities_by_id.values
       end
 
-      def [](name)
-        @entities_by_name[name]
+      def [](id)
+        @entities_by_id[id]
       end
     end
   end

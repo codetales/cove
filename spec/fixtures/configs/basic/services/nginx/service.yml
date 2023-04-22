@@ -1,9 +1,7 @@
 ---
 name: "nginx"
 image: "nginx:1.23.4"
-hosts:
-  - host1
-  - host2
+
 environment:
   FOO: bar
   SOME_VAR: true
@@ -12,6 +10,9 @@ roles:
   web:
     environment:
       FOO: baz
+    hosts:
+      - host1
+      - host2
     ingress:
       - type: port
         source: 80

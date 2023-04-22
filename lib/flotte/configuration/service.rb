@@ -1,34 +1,35 @@
-require "yaml"
-require "flotte/service"
-
 module Flotte
   module Configuration
     class Service
-      def initialize(config_file)
+      def initialize(config_file, host_registry)
         @config_file = config_file
+        @host_registry = host_registry
       end
 
       def build
         roles.each do |role|
           service.roles.add(role)
         end
-        service
+        self
       end
 
-      private
-
       def service
-        @service ||= Flotte::Service.new(name: name, image:image, environment: service_environment)
+        @service ||= Flotte::Service.new(name: service_name, image: image, default_environment: service_environment)
       end
 
       def roles
-        config["roles"].map do |name, role_config|
-          role_environemnt = (service_environment.merge(role_config["environment"] || {}))
-          Flotte::Service::Role.new(name: name, environment: role_environemnt)
+        @roles ||= config["roles"].map do |role_name, role_config|
+          role_environment = service_environment.merge(role_config["environment"] || {})
+          Flotte::Role.new(
+            name: role_name,
+            service: service,
+            environment: role_environment,
+            hosts: role_config["hosts"].map { |host_id| @host_registry[host_id] }
+          )
         end
       end
 
-      def name
+      def service_name
         config["name"]
       end
 

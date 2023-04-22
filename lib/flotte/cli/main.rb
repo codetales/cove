@@ -42,6 +42,9 @@ module Flotte
 
       desc "host", "Host specific commands"
       subcommand "host", Flotte::CLI::Host
+
+      desc "service", "Service specific commands"
+      subcommand "service", Flotte::CLI::Service
     end
   end
 end

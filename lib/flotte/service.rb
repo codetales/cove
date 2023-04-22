@@ -1,6 +1,7 @@
 module Flotte
-  class Service < Struct.new(:name, :image, :environment, :roles, keyword_init: true)
-    class Role < Struct.new(:name, :environment, :ingress, keyword_init: true)
+  class Service < Struct.new(:name, :image, :default_environment, keyword_init: true)
+    def id
+      name
     end
 
     def roles

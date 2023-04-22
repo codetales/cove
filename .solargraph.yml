@@ -9,7 +9,6 @@ require: []
 domains: []
 reporters:
   - require_not_found
-  - standard
 formatter: []
 require_paths: []
 max_files: 5000

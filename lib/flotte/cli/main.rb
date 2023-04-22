@@ -9,7 +9,7 @@ module Flotte
 
       desc "version", "Print the installed version of Flotte"
       def version
-        puts Flotte::VERSION
+        Flotte.output.puts Flotte::VERSION
       end
 
       desc "runit", "Run a command"

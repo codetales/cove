@@ -3,7 +3,8 @@
 RSpec.describe Flotte do
   describe "#version" do
     it "prints the version" do
-      expect { Flotte::CLI::Main.new.invoke(:version) }.to output("#{Flotte::VERSION}\n").to_stdout
+      Flotte::CLI::Main.new.invoke(:version)
+      expect(Flotte.output.string).to eq("#{Flotte::VERSION}\n")
     end
   end
 end

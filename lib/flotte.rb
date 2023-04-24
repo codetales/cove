@@ -29,10 +29,10 @@ module Flotte
 
   def self.init(config:)
     @registry = nil
-    Flotte::Initialization.new(config, registry).perform
+    Initialization.new(config, registry).perform
   end
 
   def self.registry
-    @registry ||= Flotte::Registry.new
+    @registry ||= Registry.new
   end
 end

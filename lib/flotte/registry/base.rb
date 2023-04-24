@@ -13,7 +13,9 @@ module Flotte
       end
 
       def add(entity)
-        @entities_by_id[entity.id] = entity
+        Array(entity).each do |entity|
+          @entities_by_id[entity.id] = entity
+        end
       end
 
       def all

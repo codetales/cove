@@ -7,20 +7,17 @@ module Flotte
       end
 
       def build
-        roles.each do |role|
-          service.roles.add(role)
-        end
         self
       end
 
       def service
-        @service ||= Flotte::Service.new(name: service_name, image: image, default_environment: service_environment)
+        @service ||= Service.new(name: service_name, image: image, default_environment: service_environment)
       end
 
       def roles
         @roles ||= config["roles"].map do |role_name, role_config|
           role_environment = service_environment.merge(role_config["environment"] || {})
-          Flotte::Role.new(
+          Role.new(
             name: role_name,
             service: service,
             environment: role_environment,

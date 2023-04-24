@@ -22,14 +22,14 @@ module Flotte
 
       def parse(entry)
         if Hash === entry
-          Flotte::Host.new(defaults.merge(entry))
+          Host.new(**defaults.merge(entry.symbolize_keys))
         else
-          Flotte::Host.new(defaults.merge(name: entry))
+          Host.new(**defaults.merge(name: entry))
         end
       end
 
       def defaults
-        @raw_host_config["defaults"].slice(*ALLOWED_DEFAULT_KEYS)
+        @raw_host_config["defaults"].slice(*ALLOWED_DEFAULT_KEYS).symbolize_keys
       end
 
       def load_config

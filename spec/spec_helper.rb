@@ -2,6 +2,7 @@
 
 require "flotte"
 require "byebug"
+Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")].sort.each { |f| require f }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -16,5 +17,9 @@ RSpec.configure do |config|
 
   config.before do
     Flotte.output = StringIO.new
+    SSHKitTest::Commander.reset
   end
+
+  config.include(SSHKitTest)
+  SSHKit.config.backend = SSHKitTest::Backend
 end

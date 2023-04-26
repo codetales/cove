@@ -10,11 +10,18 @@ module SSHKitTest
   end
 
   class Backend < SSHKit::Backend::Abstract
+    def initialize(*args)
+      @semaphore = Mutex.new
+      super
+    end
+
     def execute_command(cmd)
-      result = Commander.result_for(host, cmd)
-      cmd.on_stdout(nil, result.stdout) if result.stdout
-      cmd.on_stderr(nil, result.stderr) if result.stderr
-      cmd.exit_status = result.exit_status
+      @semaphore.synchronize do
+        result = Commander.result_for(host, cmd)
+        cmd.on_stdout(nil, result.stdout) if result.stdout
+        cmd.on_stderr(nil, result.stderr) if result.stderr
+        cmd.exit_status = result.exit_status
+      end
     end
   end
 

@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 
 # Specify your gem's dependencies in flotte.gemspec
-gemspec
+gemspec(name: "cove", path: ".")
 
 gem "rake", "~> 13.0"
 

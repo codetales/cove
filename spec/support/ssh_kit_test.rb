@@ -141,7 +141,7 @@ module SSHKitTest
           matches_command?(stub, cmd)
       end
 
-      stub || CommandStub.new(nil)
+      stub || raise("No stub found for #{cmd} on #{host}")
     end
 
     private
@@ -151,7 +151,7 @@ module SSHKitTest
       when Regexp
         stub.command === cmd.to_command
       when Array
-        SSHKit::Command.new(stub.command).to_command == cmd.to_command
+        SSHKit::Command.new(*stub.command).to_command == cmd.to_command
       else
         stub.command == cmd.to_command
       end

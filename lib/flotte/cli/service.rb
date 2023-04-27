@@ -17,6 +17,12 @@ module Flotte
           Flotte.output.puts host.name
         end
       end
+
+      desc "up SERVICE", "Ensure SERVICE is up and running"
+      def up(service_name)
+        service = Flotte.registry.services[service_name]
+        Flotte::Invocation::ServiceUp.new(registry: Flotte.registry, service: service).invoke
+      end
     end
   end
 end

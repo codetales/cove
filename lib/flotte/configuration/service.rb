@@ -11,13 +11,13 @@ module Flotte
       end
 
       def service
-        @service ||= Service.new(name: service_name, image: image, default_environment: service_environment)
+        @service ||= Flotte::Service.new(name: service_name, image: image, default_environment: service_environment)
       end
 
       def roles
         @roles ||= config["roles"].map do |role_name, role_config|
           role_environment = service_environment.merge(role_config["environment"] || {})
-          Role.new(
+          Flotte::Role.new(
             name: role_name,
             service: service,
             environment: role_environment,

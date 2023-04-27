@@ -3,25 +3,29 @@ module Flotte
     module Docker
       module Container
         class Run
-          def self.build(image:, name: nil, remove: true, detach: true, interactive: false, command: [], ports: [], extra_arguments: [])
-            built = [:docker, "container", "run"]
+          def self.build(image:, name: nil, remove: false, detach: true, interactive: false, labels: {}, command: [], ports: [], extra_arguments: [])
+            builder = [:docker, "container", "run"]
 
-            built += ["--name", name] if name.present?
+            builder += ["--name", name] if name.present?
 
             Array(ports).each do |port_mapping|
-              built += ["--publish", port_mapping]
+              builder += ["--publish", port_mapping]
             end
 
-            built << "--detach" if detach
-            built << "--rm" if remove
-            built << "-it" if interactive
+            Hash(labels).each do |key, value|
+              builder += ["--label", "#{key}=#{value}"]
+            end
 
-            built += Array(extra_arguments)
+            builder << "--detach" if detach
+            builder << "--rm" if remove
+            builder << "-it" if interactive
 
-            built << image
-            built += Array(command)
+            builder += Array(extra_arguments)
 
-            built
+            builder << image
+            builder += Array(command)
+
+            builder
           end
         end
       end

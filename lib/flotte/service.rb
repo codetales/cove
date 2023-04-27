@@ -1,5 +1,5 @@
 module Flotte
-  class Service < Data.define(:name, :image, :default_environment)
+  class Service
     # @return [String]
     attr_reader :name, :image
     # @return [Hash]
@@ -17,6 +17,12 @@ module Flotte
     # @return [String]
     def id
       name
+    end
+
+    def labels
+      {
+        "flotte.service" => name
+      }
     end
   end
 end

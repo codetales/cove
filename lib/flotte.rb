@@ -15,6 +15,7 @@ require_relative "flotte/configuration"
 require_relative "flotte/command"
 require_relative "flotte/cli"
 require_relative "flotte/initialization"
+require_relative "flotte/invocation/service_up"
 
 module Flotte
   class Error < StandardError; end

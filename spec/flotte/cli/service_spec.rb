@@ -20,4 +20,15 @@ RSpec.describe Flotte::CLI::Service do
       )
     end
   end
+
+  describe "#up" do
+    it "spins up a service" do
+      Flotte.init(config: "spec/fixtures/configs/basic/")
+      described_class.new.invoke(:up, ["nginx"])
+
+      expect(Flotte.output.string).to eq(
+        "Starting nginx.test on host1\nStarting nginx.test on host2\n"
+      )
+    end
+  end
 end

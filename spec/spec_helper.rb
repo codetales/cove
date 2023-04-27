@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "flotte"
+require "cove"
 require "byebug"
 Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")].sort.each { |f| require f }
 
@@ -16,7 +16,7 @@ RSpec.configure do |config|
   end
 
   config.before do
-    Flotte.output = StringIO.new
+    Cove.output = StringIO.new
     SSHKitTest::Commander.reset
   end
 

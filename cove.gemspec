@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require_relative "lib/flotte/version"
+require_relative "lib/cove/version"
 
 Gem::Specification.new do |spec|
   spec.name = "cove"
-  spec.version = Flotte::VERSION
+  spec.version = Cove::VERSION
   spec.authors = ["Julian Fahrer"]
   spec.email = ["julian@fahrer.net"]
 
-  spec.summary = "Manage containers with easy"
+  spec.summary = "Manage containers with ease"
   spec.description = ""
   spec.homepage = "https://codetales.io/cove"
   spec.license = "MIT"

@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "cove"
+
+Thread.report_on_exception = false
+
+Cove.init(config: ENV.fetch("COVE_CONFIG_DIR", "./"))
+
+Cove::CLI::Main.start(ARGV)

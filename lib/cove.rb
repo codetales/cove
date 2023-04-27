@@ -1,0 +1,39 @@
+# frozen_string_literal: true
+
+require "active_support/all"
+require "dotenv/load"
+require "thor"
+require "sshkit"
+require "sshkit/dsl"
+require "yaml"
+require_relative "cove/version"
+require_relative "cove/registry"
+require_relative "cove/host"
+require_relative "cove/service"
+require_relative "cove/role"
+require_relative "cove/configuration"
+require_relative "cove/command"
+require_relative "cove/cli"
+require_relative "cove/initialization"
+require_relative "cove/invocation/service_up"
+
+module Cove
+  class Error < StandardError; end
+
+  def self.output=(output)
+    @output = output
+  end
+
+  def self.output
+    @output || $stdout
+  end
+
+  def self.init(config:)
+    @registry = nil
+    Initialization.new(config, registry).perform
+  end
+
+  def self.registry
+    @registry ||= Registry.new
+  end
+end

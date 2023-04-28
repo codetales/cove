@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 require "active_support/all"
-require "dotenv/load"
 require "thor"
 require "sshkit"
 require "sshkit/dsl"
 require "yaml"
 require_relative "cove/version"
+require_relative "cove/dotenv"
 require_relative "cove/registry"
 require_relative "cove/host"
 require_relative "cove/service"
@@ -15,7 +15,8 @@ require_relative "cove/configuration"
 require_relative "cove/command"
 require_relative "cove/cli"
 require_relative "cove/initialization"
-require_relative "cove/invocation/service_up"
+require_relative "cove/invocation"
+
 
 module Cove
   class Error < StandardError; end

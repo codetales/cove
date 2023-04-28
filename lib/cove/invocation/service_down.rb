@@ -33,14 +33,14 @@ module Cove
 
       class Coordinator
         # @return
-        attr_reader :backend
+        attr_reader :connection
         # @return [Cove::Service]
         attr_reader :service
         # @return [Array<Cove::Role>]
         attr_reader :roles
 
-        def initialize(backend, service, roles)
-          @backend = backend
+        def initialize(connection, service, roles)
+          @connection = connection
           @service = service
           @roles = roles
         end
@@ -51,16 +51,16 @@ module Cove
         end
 
         def stop_containers
-          backend.info "Stopping existing containers..."
+          connection.info "Stopping existing containers..."
           existing_containers.each do |container|
-            @backend.execute(*Command::Builder.stop_container(container))
+            @connection.execute(*Command::Builder.stop_container(container))
           end
         end
 
         def delete_containers
-          backend.info "Deleting containers..."
+          connection.info "Deleting containers..."
           existing_containers.each do |container|
-            @backend.execute(*Command::Builder.delete_container(container))
+            @connection.execute(*Command::Builder.delete_container(container))
           end
         end
 
@@ -69,7 +69,7 @@ module Cove
         end
 
         def extract_running_containers
-          @backend.capture(*Command::Builder.list_containers_for_service(service), verbosity: Logger::INFO)
+          @connection.capture(*Command::Builder.list_containers_for_service(service), verbosity: Logger::INFO)
         end
       end
     end

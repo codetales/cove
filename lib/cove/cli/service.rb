@@ -23,6 +23,12 @@ module Cove
         service = Cove.registry.services[service_name]
         Cove::Invocation::ServiceUp.new(registry: Cove.registry, service: service).invoke
       end
+
+      desc "down SERVICE", "Stop and delete all containers for SERVICE"
+      def down(service_name)
+        service = Cove.registry.services[service_name]
+        Cove::Invocation::ServiceDown.new(registry: Cove.registry, service: service).invoke
+      end
     end
   end
 end

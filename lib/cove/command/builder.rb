@@ -13,11 +13,15 @@ module Cove
         Docker::Container::List.build(all: true, format: "{{.Names}}", filter: filters_for_entity(role))
       end
 
-      # @param [String] id_or_name
+      # @param [String] containers The name or id of the container(s) to stop
       # @param [Integer] time
-      # @return [Array]
-      def self.stop_container(id_or_name, time: nil)
-        Docker::Container::Stop.build(id: id_or_name, time: time)
+      def self.stop_container(containers, time: nil)
+        Docker::Container::Stop.build(Array(containers), time: time)
+      end
+
+      # @param [String] containers The name or id of the container(s) to delete
+      def self.delete_container(containers)
+        Docker::Container::Rm.build(Array(containers ))
       end
 
       # @param [Cove::Role] role

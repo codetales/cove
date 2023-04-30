@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     cove (0.1.0)
+      activemodel (~> 7.0)
       activesupport (~> 7.0)
       bcrypt_pbkdf (~> 1.1)
       dotenv (~> 2.8)
@@ -12,6 +13,8 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    activemodel (7.0.4.3)
+      activesupport (= 7.0.4.3)
     activesupport (7.0.4.3)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)

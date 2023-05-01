@@ -1,5 +1,5 @@
 module Cove
-  class ContainerConfig
+  class DesiredContainer
     include ActiveModel::API
     include ActiveModel::Attributes
 

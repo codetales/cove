@@ -25,13 +25,18 @@ module Cove
     end
 
     def name_for_container
-      id + "." + SecureRandom.hex(4)
+      id + "." + hash
     end
 
     def labels
       service.labels.merge({
-        "cove.role" => name
+        "cove.role" => name,
+        "cove.version" => hash
       })
+    end
+
+    def hash
+      Digest::SHA2.hexdigest([id, image].to_json)[0..12]
     end
   end
 end

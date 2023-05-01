@@ -44,30 +44,23 @@ module Cove
         end
 
         def run
-          stop_containers
-          start_containers
-        end
+          existing_containers = Steps::GetExistingContainerDetails.call(connection, service)
 
-        def stop_containers
-          connection.info "Checking for running containers..."
-          connection.info "Stopping existing containers..." if existing_containers.any?
-          existing_containers.each do |container|
-            @connection.execute(*Command::Builder.stop_container(container))
-          end
-        end
-
-        def existing_containers
-          @existing_containers ||= extract_running_containers.each_line.map(&:strip)
-        end
-
-        def extract_running_containers
-          @connection.capture(*Command::Builder.list_containers_for_service(service), verbosity: Logger::INFO)
-        end
-
-        def start_containers
           roles.each do |role|
-            @connection.execute(*Command::Builder.start_container_for_role(role))
+            running_containers = existing_containers.with_role(role).running.map(&:name)
+            desired_containers = role.container_count.times.map { |index| DesiredContainer.from(role, index) }
+
+            rolling_updates = [running_containers.length, desired_containers.length].max.times.map do |index|
+              [
+                running_container: running_containers[index],
+                desired_container: desired_containers[index]
+              ]
+            end
+
+            Steps::RollingUpdate.call(connection, rolling_updates)
           end
+
+          Steps::Prune.call(connection, service, roles)
         end
       end
     end

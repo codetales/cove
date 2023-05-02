@@ -12,25 +12,25 @@ module Cove
 
       # @param [Cove::Service] service
       # @return [Array]
-      def self.list_containers_matching(filters)
-        Docker::Container::List.build(all: true, format: "{{.Names}}", filter: filters)
+      def self.list_containers_matching(*filters)
+        Docker::Container::List.build(all: true, format: "{{.Names}}", filter: filters.flatten)
       end
 
       # @param [Array] containers The name or id of the container(s) to inspect
       # @return [Array] The command to inspect the containers
-      def self.inspect_containers(containers = [])
-        [:docker, "container", "inspect", *containers]
+      def self.inspect_containers(*containers)
+        [:docker, "container", "inspect", *containers.flatten]
       end
 
       # @param [String] containers The name or id of the container(s) to stop
       # @param [Integer] time
-      def self.stop_container(containers, time: nil)
-        Docker::Container::Stop.build(Array(containers), time: time)
+      def self.stop_container(*containers, time: nil)
+        Docker::Container::Stop.build(containers.flatten, time: time)
       end
 
       # @param [String] containers The name or id of the container(s) to delete
-      def self.delete_container(containers = [])
-        [:docker, "container", "rm", *containers]
+      def self.delete_container(*containers)
+        [:docker, "container", "rm", *containers.flatten]
       end
 
       # @param [Cove::Role] role

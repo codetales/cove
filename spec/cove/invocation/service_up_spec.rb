@@ -3,12 +3,9 @@ RSpec.describe Cove::Invocation::ServiceUp do
     context "with no existing containers" do
       it "should start a container" do
         registry, service = setup_environment
+        stubs = []
 
         invocation = described_class.new(registry: registry, service: service)
-
-        stubs << stub_command(Cove::Command::Builder.list_containers_for_service(service)).with_stdout("").with_exit_status(0)
-        stubs << stub_command(Cove::Command::Builder.start_container_for_role(role)).with_stdout("").with_exit_status(0)
-        stubs << stub_command(Cove::Command::Builder.check_container_health(role)).with_stdout("").with_exit_status(0)
 
         invocation.invoke
 

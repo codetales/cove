@@ -1,5 +1,5 @@
-module Invokable
-  include ActiveSupport::Concern
+module Cove::Callable
+  extend ActiveSupport::Concern
 
   class_methods do
     def call(...)

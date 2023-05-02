@@ -6,6 +6,7 @@ require "thor"
 require "sshkit"
 require "sshkit/dsl"
 require "yaml"
+require_relative "cove/callable"
 require_relative "cove/version"
 require_relative "cove/dotenv"
 require_relative "cove/registry"
@@ -18,6 +19,7 @@ require_relative "cove/cli"
 require_relative "cove/initialization"
 require_relative "cove/invocation"
 require_relative "cove/container_config"
+require_relative "cove/runtime"
 
 module Cove
   class Error < StandardError; end

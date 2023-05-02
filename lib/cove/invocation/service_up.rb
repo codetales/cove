@@ -1,3 +1,5 @@
+require_relative "steps/get_existing_container_details"
+
 module Cove
   module Invocation
     class ServiceUp

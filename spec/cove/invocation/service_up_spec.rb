@@ -2,10 +2,16 @@ RSpec.describe Cove::Invocation::ServiceUp do
   describe "#invoke" do
     context "with no existing containers" do
       it "should start a container" do
-        registry, service = setup_environment
+        registry, service, role = setup_environment
         stubs = []
 
         invocation = described_class.new(registry: registry, service: service)
+        allow(Cove::Invocation::Steps::GetExistingContainerDetails).to receive(:call).with(kind_of(SSHKit::Backend::Abstract), service) {
+          Cove::Runtime::ContainerList.new([
+            Cove::Runtime::Container.new(id: "1234", name: "container1", image: service.image, status: "running", service: service.name, role: role.name, version: role.version),
+            Cove::Runtime::Container.new(id: "4567", name: "container2", image: service.image, status: "running", service: service.name, role: role.name, version: role.version)
+          ])
+        }
 
         invocation.invoke
 
@@ -37,7 +43,7 @@ RSpec.describe Cove::Invocation::ServiceUp do
       role = Cove::Role.new(name: "test", service: service, hosts: [host])
       registry = Cove::Registry.build(hosts: [host], services: [service], roles: [role])
 
-      [registry, service]
+      [registry, service, role]
     end
   end
 end

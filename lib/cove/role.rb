@@ -31,8 +31,12 @@ module Cove
     def labels
       service.labels.merge({
         "cove.role" => name,
-        "cove.version" => hash
+        "cove.deployed_version" => version
       })
+    end
+
+    def version
+      hash
     end
 
     def hash

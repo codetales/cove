@@ -24,11 +24,12 @@ RSpec.describe Cove::CLI::Service do
   describe "#up" do
     it "spins up a service" do
       Cove.init(config: "spec/fixtures/configs/basic/")
-      described_class.new.invoke(:up, ["nginx"])
 
-      expect(Cove.output.string).to eq(
-        "Starting nginx.test on host1\nStarting nginx.test on host2\n"
-      )
+      expect(Cove::Invocation::ServiceUp).to receive(:new).with(
+        registry: Cove.registry,
+        service: Cove.registry.services["nginx"]
+      ) { double(invoke: nil) }
+      described_class.new.invoke(:up, ["nginx"])
     end
   end
 end

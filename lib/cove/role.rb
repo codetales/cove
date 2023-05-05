@@ -24,15 +24,15 @@ module Cove
       "#{service.name}.#{name}"
     end
 
-    def name_for_container
-      id + "." + hash
-    end
-
     def labels
       service.labels.merge({
         "cove.role" => name,
         "cove.deployed_version" => version
       })
+    end
+
+    def container_count
+      1
     end
 
     def version

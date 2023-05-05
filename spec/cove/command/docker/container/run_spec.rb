@@ -9,6 +9,7 @@ RSpec.describe Cove::Command::Docker::Container::Run do
           "container",
           "run",
           "--name", "my-container",
+          "--detach",
           "hello-world"
         ]
       )

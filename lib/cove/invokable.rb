@@ -1,9 +1,11 @@
-module Cove::Invokable
-  extend ActiveSupport::Concern
+module Cove
+  module Invokable
+    extend ActiveSupport::Concern
 
-  class_methods do
-    def invoke(...)
-      new(...).invoke
+    class_methods do
+      def invoke(...)
+        new(...).invoke
+      end
     end
   end
 end

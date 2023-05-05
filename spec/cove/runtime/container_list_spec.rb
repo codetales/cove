@@ -1,5 +1,5 @@
 RSpec.describe Cove::Runtime::ContainerList do
-  describe "#for_role" do
+  describe "#with_role" do
     it "returns a list of containers for a given role" do
       service = Cove::Service.new(name: "foo", image: "app:latest")
       role = Cove::Role.new(name: "web", service: service, hosts: [])
@@ -8,7 +8,7 @@ RSpec.describe Cove::Runtime::ContainerList do
       container2 = build_container(service: "foo", role: "web")
       container3 = build_container(service: "bar", role: "web")
 
-      result = described_class.new([container1, container2, container3]).for_role(role)
+      result = described_class.new([container1, container2, container3]).with_role(role)
       expect(result).to be_kind_of(described_class)
       expect(result.count).to eq(2)
       expect(result).to include(container1, container2)

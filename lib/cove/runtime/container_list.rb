@@ -9,7 +9,7 @@ module Cove
         @containers = containers.to_a
       end
 
-      def for_role(role)
+      def with_role(role)
         wrapped(select { |c| c.service == role.service.name && c.role == role.name })
       end
 

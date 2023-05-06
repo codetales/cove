@@ -39,6 +39,12 @@ module Cove
         Docker::Container::Run.build(image: config.image, name: config.name, labels: config.labels, command: config.command)
       end
 
+      # @param [Cove::DesiredContainer] config
+      # @return [Array] The command to create the container
+      def self.create_container(config)
+        Docker::Container::Create.build(image: config.image, name: config.name, labels: config.labels, command: config.command)
+      end
+
       # @param [Array] commands The commands to pipe together
       # @return [Array] The commands joined by pipes
       def self.pipe(*commands)

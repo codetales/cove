@@ -18,7 +18,7 @@ require_relative "cove/command"
 require_relative "cove/cli"
 require_relative "cove/initialization"
 require_relative "cove/invocation"
-require_relative "cove/container_config"
+require_relative "cove/desired_container"
 require_relative "cove/runtime"
 
 module Cove

@@ -51,15 +51,9 @@ module Cove
           roles.each do |role|
             running_containers = existing_containers.with_role(role).running.map(&:name)
             desired_containers = role.container_count.times.map { |index| DesiredContainer.from(role, index) }
-
-            rolling_updates = [running_containers.length, desired_containers.length].max.times.map do |index|
-              [
-                running_container: running_containers[index],
-                desired_container: desired_containers[index]
-              ]
-            end
-
-            Steps::RollingUpdate.call(connection, rolling_updates)
+            state_diff = StateDiff.new(running_containers, desired_containers)
+            Steps::PullImage.call(connection, role)
+            Steps::Roll.call(connection, role, state_diff)
           end
 
           Steps::Prune.call(connection, service, roles)

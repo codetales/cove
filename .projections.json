@@ -1,4 +1,7 @@
 {
+  "cove.gemspec": {
+    "type": "gemspec"
+  },
   "lib/*.rb": {
     "type": "implementation",
     "alternate": "spec/{}_spec.rb"

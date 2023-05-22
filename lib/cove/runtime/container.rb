@@ -12,7 +12,8 @@ module Cove
           status: container.dig("State", "Status"),
           service: container.dig("Config", "Labels", "cove.service"),
           role: container.dig("Config", "Labels", "cove.role"),
-          version: container.dig("Config", "Labels", "cove.deployed_version")
+          version: container.dig("Config", "Labels", "cove.deployed_version"),
+          index: container.dig("Config", "Labels", "cove.index")
         )
       end
 
@@ -23,6 +24,7 @@ module Cove
       attribute :service, :string
       attribute :role, :string
       attribute :version, :string
+      attribute :index, :integer
 
       def running?
         status == "running"

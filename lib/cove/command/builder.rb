@@ -22,6 +22,10 @@ module Cove
         [:docker, "container", "inspect", *containers.flatten]
       end
 
+      def self.start_container(*containers)
+        [:docker, "container", "start", *containers.flatten]
+      end
+
       # @param [String] containers The name or id of the container(s) to stop
       # @param [Integer] time
       def self.stop_container(*containers, time: nil)
@@ -33,16 +37,16 @@ module Cove
         [:docker, "container", "rm", *containers.flatten]
       end
 
-      # @param [Cove::Role] role
-      # @return [Array]
-      def self.start_container_for_role(config)
-        Docker::Container::Run.build(image: config.image, name: config.name, labels: config.labels, command: config.command)
-      end
-
       # @param [Cove::DesiredContainer] config
       # @return [Array] The command to create the container
       def self.create_container(config)
         Docker::Container::Create.build(image: config.image, name: config.name, labels: config.labels, command: config.command)
+      end
+
+      # @param [String] image The image to pull
+      # @return [Array] The command to pull the image
+      def self.pull_image(image)
+        [:docker, "image", "pull", image]
       end
 
       # @param [Array] commands The commands to pipe together

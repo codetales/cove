@@ -1,5 +1,3 @@
-require_relative "steps/get_existing_container_details"
-
 module Cove
   module Invocation
     class ServiceUp
@@ -17,7 +15,7 @@ module Cove
 
       # @return nil
       def invoke
-        service = @service # Need to set a local var to be able to use it in the block below
+        service = @service # Need to set a local var to be able to reference it in the block below
         roles = registry.roles.select { |role| role.service == service }
 
         hosts = roles.flat_map(&:hosts).uniq.map(&:sshkit_host)
@@ -49,14 +47,37 @@ module Cove
           existing_containers = Steps::GetExistingContainerDetails.call(connection, service)
 
           roles.each do |role|
-            running_containers = existing_containers.with_role(role).running.map(&:name)
-            desired_containers = role.container_count.times.map { |index| DesiredContainer.from(role, index) }
-            state_diff = StateDiff.new(running_containers, desired_containers)
+            existing_containers = existing_containers.with_role(role)
+            desired_containers = 1.upto(role.container_count).map { |index| DesiredContainer.from(role, index) }
+
+            state_diff = StateDiff.new(existing_containers, desired_containers)
             Steps::PullImage.call(connection, role)
-            Steps::Roll.call(connection, role, state_diff)
+
+            state_diff.containers_to_create.each do |container|
+              cmd = Command::Builder.create_container(container)
+              connection.execute(*cmd)
+            end
+
+            state_diff.containers_to_stop.each do |container|
+              cmd = Command::Builder.stop_container(container.name)
+              connection.execute(*cmd)
+            end
+
+            state_diff.containers_to_start.each do |container|
+              cmd = Command::Builder.start_container(container.name)
+              connection.execute(*cmd)
+            end
+
+            state_diff.containers_to_replace.each do |replacement|
+              cmd = Command::Builder.stop_container(replacement[:old].name)
+              connection.execute(*cmd)
+
+              cmd = Command::Builder.start_container(replacement[:new].name)
+              connection.execute(*cmd)
+            end
           end
 
-          Steps::Prune.call(connection, service, roles)
+          # Steps::Prune.call(connection, service, roles)
         end
       end
     end

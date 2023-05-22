@@ -19,6 +19,7 @@ require_relative "cove/cli"
 require_relative "cove/initialization"
 require_relative "cove/invocation"
 require_relative "cove/desired_container"
+require_relative "cove/state_diff"
 require_relative "cove/runtime"
 
 module Cove

@@ -4,12 +4,18 @@ RSpec.describe Cove::Invocation::ServiceUp do
       it "should start a container" do
         registry, service, role = setup_environment
         stubs = []
+        desired_container = Cove::DesiredContainer.from(role, 1)
+        stubs << stub_command(Cove::Command::Builder.pull_image(role.image)).with_exit_status(0)
+        stubs << stub_command(Cove::Command::Builder.create_container(desired_container)).with_exit_status(0)
+        stubs << stub_command(Cove::Command::Builder.stop_container("legacy_container2")).with_exit_status(0)
+        stubs << stub_command(Cove::Command::Builder.stop_container("legacy_container1")).with_exit_status(0)
+        stubs << stub_command(Cove::Command::Builder.start_container(desired_container.name)).with_exit_status(0)
 
         invocation = described_class.new(registry: registry, service: service)
         allow(Cove::Invocation::Steps::GetExistingContainerDetails).to receive(:call).with(kind_of(SSHKit::Backend::Abstract), service) {
           Cove::Runtime::ContainerList.new([
-            Cove::Runtime::Container.new(id: "1234", name: "container1", image: service.image, status: "running", service: service.name, role: role.name, version: role.version),
-            Cove::Runtime::Container.new(id: "4567", name: "container2", image: service.image, status: "running", service: service.name, role: role.name, version: role.version)
+            Cove::Runtime::Container.new(id: "1234", name: "legacy_container1", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 1),
+            Cove::Runtime::Container.new(id: "4567", name: "legacy_container2", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 2)
           ])
         }
 

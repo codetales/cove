@@ -108,7 +108,7 @@ module SSHKitTest
       when Regexp
         "a command matching #{command.inspect}"
       when Array
-        SSHKit::Command.new(command).to_command.inspect
+        SSHKit::Command.new(*command).to_command.inspect
       else
         command.inspect
       end
@@ -141,10 +141,14 @@ module SSHKitTest
           matches_command?(stub, cmd)
       end
 
-      stub || raise("No stub found for #{cmd} on #{host}")
+      stub || raise("No stub found for #{cmd.to_command} on #{host}.\n\nRegistered stubs:\n#{registered_stubs_list}\n ")
     end
 
     private
+
+    def registered_stubs_list
+      @stubs.map(&:to_s).join("\n")
+    end
 
     def matches_command?(stub, cmd)
       case stub.command

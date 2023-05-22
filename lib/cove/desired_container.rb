@@ -9,14 +9,18 @@ module Cove
         name: name,
         image: role.image,
         command: role.command,
-        labels: role.labels,
-        environment: role.environment
+        labels: role.labels.merge("cove.index" => index), # TODO: We would need to pull the index into the labels. Probalby best to move labels out of the role and into this class.
+        environment: role.environment,
+        version: role.version,
+        index: index
       )
     end
 
     attribute :name, :string
     attribute :image, :string
     attribute :command, :string
+    attribute :index, :integer
+    attribute :version, :string
     attribute :labels, array: true, default: -> { [] }
     attribute :environment, default: -> { {} }
     attribute :volumes, array: true, default: -> { [] }

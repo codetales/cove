@@ -18,7 +18,7 @@ module Cove
             .each_line
             .map(&:strip)
             .reject(&:blank?)
-          return [] if container_names.empty?
+          return Runtime::ContainerList.new if container_names.empty?
 
           json = connection.capture(*Command::Builder.inspect_containers(container_names), verbosity: Logger::INFO)
           containers = JSON.parse(json).map do |config|

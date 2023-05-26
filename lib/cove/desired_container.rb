@@ -18,7 +18,7 @@ module Cove
 
     attribute :name, :string
     attribute :image, :string
-    attribute :command, :string
+    attribute :command, array: true, default: -> { [] }
     attribute :index, :integer
     attribute :version, :string
     attribute :labels, array: true, default: -> { [] }

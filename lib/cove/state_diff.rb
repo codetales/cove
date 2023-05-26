@@ -6,10 +6,10 @@ module Cove
     end
 
     def containers_to_create
-      @desired_containers.reject do |container|
+      @desired_containers.reject do |desired_container|
         @existing_containers.any? do |existing_container|
-          existing_container.index == container.index &&
-            existing_container.version == container.version
+          existing_container.index == desired_container.index &&
+            existing_container.version == desired_container.version
         end
       end
     end
@@ -17,9 +17,9 @@ module Cove
     def containers_to_start
       @desired_containers.select do |desired_container|
         @existing_containers.any? do |existing_container|
-          existing_container.version == desired_container.version &&
-            existing_container.index == desired_container.index &&
-            !extra_container.running?
+          existing_container.index == desired_container.index &&
+            existing_container.version == desired_container.version &&
+            !existing_container.running?
         end
       end
     end
@@ -28,7 +28,8 @@ module Cove
       @existing_containers.select do |existing_container|
         @desired_containers.any? do |desired_container|
           existing_container.version != desired_container.version &&
-            existing_container.index == desired_container.index
+            existing_container.index == desired_container.index &&
+            existing_container.running?
         end
       end.map do |existing_container|
         {
@@ -41,7 +42,7 @@ module Cove
     end
 
     def containers_to_stop
-      @existing_containers[@desired_containers.count..]
+      []
     end
   end
 end

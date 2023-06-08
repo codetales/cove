@@ -42,7 +42,12 @@ module Cove
     end
 
     def containers_to_stop
-      []
+      @existing_containers.reject do |existing_container|
+        @desired_containers.any? do |desired_container|
+          !existing_container.running? ||
+            (existing_container.index == desired_container.index)
+        end
+      end
     end
   end
 end

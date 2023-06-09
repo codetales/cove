@@ -1,4 +1,3 @@
-puts "Loading #{__FILE__}"
 module Cove
   module Invocation
     module Steps

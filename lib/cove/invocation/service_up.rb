@@ -47,6 +47,8 @@ module Cove
           existing_containers = Steps::GetExistingContainerDetails.call(connection, service)
 
           roles.each do |role|
+            Steps::EnsureEnvironmentFileExists.call(connection, role)
+
             existing_containers = existing_containers.with_role(role)
             desired_containers = 1.upto(role.container_count).map { |index| DesiredContainer.from(role, index) }
 

@@ -3,7 +3,7 @@ module Cove
     class ContainerList
       include Enumerable
 
-      delegate :each, :[], :last, to: :@containers
+      delegate :each, :[], :last, :empty?, to: :@containers
 
       def initialize(containers = [])
         @containers = containers.to_a

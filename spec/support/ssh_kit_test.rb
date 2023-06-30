@@ -1,7 +1,13 @@
 module SSHKitTest
   def stub_command(command)
     stub = CommandStub.new(command)
-    Commander.register_stub(stub)
+    Commander.register_command_stub(stub)
+    stub
+  end
+
+  def stub_upload(destination)
+    stub = UploadStub.new(destination)
+    Commander.register_upload_stub(stub)
     stub
   end
 
@@ -23,25 +29,69 @@ module SSHKitTest
         cmd.exit_status = result.exit_status
       end
     end
+
+    def upload!(file, destination)
+      Commander.track_upload(host, file, destination)
+    end
   end
 
   class Commander
     class << self
       def reset
-        @stubs = StubRegistry.new
+        @command_stubs = CommandStubRegistry.new
+        @upload_stubs = UploadStubRegistry.new
         @logs = CommandLog.new
       end
 
-      def register_stub(stub)
-        @stubs.register(stub)
+      def register_command_stub(stub)
+        @command_stubs.register(stub)
+      end
+
+      def register_upload_stub(stub)
+        @upload_stubs.register(stub)
       end
 
       def result_for(host, cmd)
         @logs.add(host, cmd)
-        stub = @stubs.find_matching(cmd, host)
+        stub = @command_stubs.find_matching(cmd, host)
         stub.track_invokation!(host, cmd)
         stub
       end
+
+      def track_upload(host, file, destination)
+        stub = @upload_stubs.find_matching(destination, host)
+        stub.track_invokation!(host, file, destination)
+        stub
+      end
+    end
+  end
+
+  class UploadStubRegistry
+    def initialize
+      @stubs = []
+    end
+
+    def register(stub)
+      @stubs << stub
+    end
+
+    def find_matching(destination, host)
+      stub = @stubs.find do |stub|
+        (stub.host.blank? || stub.host === host.hostname) &&
+          matches_destination?(stub, destination)
+      end
+
+      stub || raise("No stub found for upload to #{destination} on #{host}.\n\nRegistered stubs:\n#{registered_stubs_list}\n ")
+    end
+
+    private
+
+    def matches_destination?(stub, destination)
+      stub.destination === destination
+    end
+
+    def registered_stubs_list
+      @stubs.map(&:to_s).join("\n")
     end
   end
 
@@ -115,6 +165,56 @@ module SSHKitTest
     end
   end
 
+  class UploadStub
+    attr_reader :host, :invocations, :destination
+
+    def initialize(destination)
+      @host = nil
+      @destination = destination
+      @invocations = []
+    end
+
+    def on(host)
+      @host = host
+      self
+    end
+
+    def track_invokation!(host, file, destination)
+      invocations << [host, file, destination]
+    end
+
+    def invoked?
+      number_of_invocations > 0
+    end
+
+    def number_of_invocations
+      invocations.size
+    end
+
+    def to_s
+      upload_with_host_string
+    end
+
+    private
+
+    def upload_with_host_string
+      if host
+        "#{upload_string} on #{host}"
+      else
+        upload_string
+      end
+    end
+
+    def upload_string
+      case destination
+      when Regexp
+        "a file matching #{destination.inspect}"
+      else
+        destination.inspect
+      end
+    end
+  end
+
   class CommandLog
     def add(host, cmd)
       @log ||= Hash.new { |h, k| h[k] = [] }
@@ -126,17 +226,17 @@ module SSHKitTest
     end
   end
 
-  class StubRegistry
+  class CommandStubRegistry
     def initialize
-      @stubs = []
+      @command_stubs = []
     end
 
     def register(stub)
-      @stubs << stub
+      @command_stubs << stub
     end
 
     def find_matching(cmd, host)
-      stub = @stubs.find do |stub|
+      stub = @command_stubs.find do |stub|
         (stub.host.blank? || stub.host === host.hostname) &&
           matches_command?(stub, cmd)
       end
@@ -147,7 +247,7 @@ module SSHKitTest
     private
 
     def registered_stubs_list
-      @stubs.map(&:to_s).join("\n")
+      @command_stubs.map(&:to_s).join("\n")
     end
 
     def matches_command?(stub, cmd)

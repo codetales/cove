@@ -40,7 +40,7 @@ module Cove
       # @param [Cove::DesiredContainer] config
       # @return [Array] The command to create the container
       def self.create_container(config)
-        Docker::Container::Create.build(image: config.image, name: config.name, labels: config.labels, command: config.command)
+        Docker::Container::Create.build(image: config.image, name: config.name, labels: config.labels, command: config.command, environment_files: config.environment_files)
       end
 
       # @param [String] image The image to pull

@@ -65,6 +65,7 @@ RSpec.describe Cove::Steps::GetExistingContainerDetails do
         containers = described_class.call(connection, service)
 
         expect(containers).to be_empty
+        expect(containers).to be_kind_of(Cove::Runtime::ContainerList)
       end
     end
   end

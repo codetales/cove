@@ -48,7 +48,7 @@ module Cove
       end
 
       def state_diff
-        @state_diff ||= StateDiff.new(existing_containers, desired_containers)
+        @state_diff ||= StateDiff::ContainerStatus.new(existing_containers, desired_containers)
       end
 
       def existing_containers

@@ -4,7 +4,6 @@
 
 - Test for `GetExistingContainerDetails` when there are no existing containers (didn't return the right data type)
 - `StateDiff` test: running existing containers should not be started
-- Implement `StateDiff#containers_to_stop`
 
 - Extract `Step`s from `ServiceUp` into their own classes
 

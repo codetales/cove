@@ -14,7 +14,7 @@ RSpec.describe Cove::Configuration::Service do
       expect(role.service).to eq(service)
       expect(service.name).to eq("nginx")
       expect(service.image).to eq("nginx:1.23.4")
-      expect(role.environment).to eq({
+      expect(role.environment_variables).to eq({
         "SOME_VAR" => true,
         "FOO" => "baz"
       })

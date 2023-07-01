@@ -12,7 +12,7 @@ module SSHKitTest
   end
 
   def have_been_invoked(count: nil)
-    RSpecSSHKitCommandInvocationMatcher.new(count: count)
+    RSpecSSHKitInvocationMatcher.new(count: count)
   end
 
   class Backend < SSHKit::Backend::Abstract
@@ -32,6 +32,7 @@ module SSHKitTest
 
     def upload!(file, destination)
       Commander.track_upload(host, file, destination)
+      nil
     end
   end
 
@@ -63,35 +64,6 @@ module SSHKitTest
         stub.track_invokation!(host, file, destination)
         stub
       end
-    end
-  end
-
-  class UploadStubRegistry
-    def initialize
-      @stubs = []
-    end
-
-    def register(stub)
-      @stubs << stub
-    end
-
-    def find_matching(destination, host)
-      stub = @stubs.find do |stub|
-        (stub.host.blank? || stub.host === host.hostname) &&
-          matches_destination?(stub, destination)
-      end
-
-      stub || raise("No stub found for upload to #{destination} on #{host}.\n\nRegistered stubs:\n#{registered_stubs_list}\n ")
-    end
-
-    private
-
-    def matches_destination?(stub, destination)
-      stub.destination === destination
-    end
-
-    def registered_stubs_list
-      @stubs.map(&:to_s).join("\n")
     end
   end
 
@@ -165,6 +137,82 @@ module SSHKitTest
     end
   end
 
+  class CommandLog
+    def add(host, cmd)
+      @log ||= Hash.new { |h, k| h[k] = [] }
+      @log[host.hostname] << cmd
+    end
+
+    def get(hostname)
+      @log[hostname]
+    end
+  end
+
+  class CommandStubRegistry
+    def initialize
+      @stubs = []
+    end
+
+    def register(stub)
+      @stubs << stub
+    end
+
+    def find_matching(cmd, host)
+      stub = @stubs.find do |stub|
+        (stub.host.blank? || stub.host === host.hostname) &&
+          matches_command?(stub, cmd)
+      end
+
+      stub || raise("No stub found for #{cmd.to_command} on #{host}.\n\nRegistered stubs:\n#{registered_stubs_list}\n ")
+    end
+
+    private
+
+    def registered_stubs_list
+      @stubs.map(&:to_s).join("\n")
+    end
+
+    def matches_command?(stub, cmd)
+      case stub.command
+      when Regexp
+        stub.command === cmd.to_command
+      when Array
+        SSHKit::Command.new(*stub.command).to_command == cmd.to_command
+      else
+        stub.command == cmd.to_command
+      end
+    end
+  end
+
+  class UploadStubRegistry
+    def initialize
+      @stubs = []
+    end
+
+    def register(stub)
+      @stubs << stub
+    end
+
+    def find_matching(destination, host)
+      stub = @stubs.find do |stub|
+        (stub.host.blank? || stub.host === host.hostname) &&
+          matches_destination?(stub, destination)
+      end
+
+      stub || raise("No stub found for upload to #{destination} on #{host}.\n\nRegistered stubs:\n#{registered_stubs_list}\n ")
+    end
+
+    private
+
+    def matches_destination?(stub, destination)
+      stub.destination === destination
+    end
+
+    def registered_stubs_list
+      @stubs.map(&:to_s).join("\n")
+    end
+  end
+
   class UploadStub
     attr_reader :host, :invocations, :destination
 
@@ -206,95 +254,49 @@ module SSHKitTest
     end
 
     def upload_string
-      case destination
+      base = case destination
       when Regexp
-        "a file matching #{destination.inspect}"
+        "matching #{destination.inspect}"
       else
         destination.inspect
       end
+      "file upload to #{base}"
     end
   end
 
-  class CommandLog
-    def add(host, cmd)
-      @log ||= Hash.new { |h, k| h[k] = [] }
-      @log[host.hostname] << cmd
+  class RSpecSSHKitInvocationMatcher
+    include ::RSpec::Matchers::Composable
+
+    def initialize(count: nil)
+      @count = count
     end
 
-    def get(hostname)
-      @log[hostname]
-    end
-  end
+    def matches?(stub)
+      @stub = stub
 
-  class CommandStubRegistry
-    def initialize
-      @command_stubs = []
-    end
-
-    def register(stub)
-      @command_stubs << stub
-    end
-
-    def find_matching(cmd, host)
-      stub = @command_stubs.find do |stub|
-        (stub.host.blank? || stub.host === host.hostname) &&
-          matches_command?(stub, cmd)
+      if @count
+        number_of_invocations == @count
+      else
+        number_of_invocations > 0
       end
+    end
 
-      stub || raise("No stub found for #{cmd.to_command} on #{host}.\n\nRegistered stubs:\n#{registered_stubs_list}\n ")
+    def description
+      "invoke #{@stub}"
+    end
+
+    def failure_message
+      "expected #{@stub} to be invoked #{@count ? "#{@count} times" : "at least once"}#{(number_of_invocations > 0) ? " but it was invoked #{number_of_invocations} times" : ""}"
+    end
+
+    def failure_message_when_negated
+      "expected #{@stub} not to be invoked but it was invoked #{number_of_invocations} times"
     end
 
     private
 
-    def registered_stubs_list
-      @command_stubs.map(&:to_s).join("\n")
+    def number_of_invocations
+      @stub.number_of_invocations
     end
-
-    def matches_command?(stub, cmd)
-      case stub.command
-      when Regexp
-        stub.command === cmd.to_command
-      when Array
-        SSHKit::Command.new(*stub.command).to_command == cmd.to_command
-      else
-        stub.command == cmd.to_command
-      end
-    end
-  end
-end
-
-class RSpecSSHKitCommandInvocationMatcher
-  include ::RSpec::Matchers::Composable
-
-  def initialize(count: nil)
-    @count = count
-  end
-
-  def matches?(stub)
-    @stub = stub
-
-    if @count
-      number_of_invocations == @count
-    else
-      number_of_invocations > 0
-    end
-  end
-
-  def description
-    "invoke #{@stub}"
-  end
-
-  def failure_message
-    "expected #{@stub} to be invoked #{@count ? "#{@count} times" : "at least once"}#{(number_of_invocations > 0) ? " but it was invoked #{number_of_invocations} times" : ""}"
-  end
-
-  def failure_message_when_negated
-    "expected #{@stub} not to be invoked but it was invoked #{number_of_invocations} times"
-  end
-
-  private
-
-  def number_of_invocations
-    @stub.number_of_invocations
   end
 end

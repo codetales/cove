@@ -10,10 +10,8 @@ RSpec.describe Cove::Invocation::ServiceUp do
         stubs << stub_command(Cove::Command::Builder.stop_container("legacy_container2")).with_exit_status(0)
         stubs << stub_command(Cove::Command::Builder.stop_container("legacy_container1")).with_exit_status(0)
         stubs << stub_command(Cove::Command::Builder.start_container(desired_container.name)).with_exit_status(0)
-
-        # TODO: Make these tests more robust
-        stub_command(/mkdir/)
-        stub_upload("/var/cove/env/#{service.name}/#{role.name}/#{role.version}.env")
+        stubs << stub_command(/mkdir -p \/var\/cove\/env\/#{service.name}\/#{role.name}/)
+        stubs << stub_upload("/var/cove/env/#{service.name}/#{role.name}/#{role.version}.env")
 
         invocation = described_class.new(registry: registry, service: service)
         allow(Cove::Invocation::Steps::GetExistingContainerDetails).to receive(:call).with(kind_of(SSHKit::Backend::Abstract), service) {

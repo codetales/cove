@@ -44,47 +44,11 @@ module Cove
         end
 
         def run
-          existing_containers = Steps::GetExistingContainerDetails.call(connection, service)
-
           roles.each do |role|
             Steps::EnsureEnvironmentFileExists.call(connection, role)
-
-            existing_containers = existing_containers.with_role(role)
-            desired_containers = 1.upto(role.container_count).map { |index| DesiredContainer.from(role, index) }
-
-            state_diff = StateDiff.new(existing_containers, desired_containers)
-
             Steps::PullImage.call(connection, role)
-
-            connection.info("Creating #{state_diff.containers_to_create.count} containers")
-            state_diff.containers_to_create.each do |container|
-              cmd = Command::Builder.create_container(container)
-              connection.execute(*cmd)
-            end
-
-            existing_containers = Steps::GetExistingContainerDetails.call(connection, service)
-            state_diff = StateDiff.new(existing_containers, desired_containers)
-
-            connection.info("Stopping additional #{state_diff.containers_to_stop.count} containers")
-            state_diff.containers_to_stop.each do |container|
-              cmd = Command::Builder.stop_container(container.name)
-              connection.execute(*cmd)
-            end
-
-            connection.info("Starting additional #{state_diff.containers_to_start.count} containers")
-            state_diff.containers_to_start.each do |container|
-              cmd = Command::Builder.start_container(container.name)
-              connection.execute(*cmd)
-            end
-
-            connection.info("Replacing #{state_diff.containers_to_replace.count} containers")
-            state_diff.containers_to_replace.each do |replacement|
-              cmd = Command::Builder.stop_container(replacement[:old].name)
-              connection.execute(*cmd)
-
-              cmd = Command::Builder.start_container(replacement[:new].name)
-              connection.execute(*cmd)
-            end
+            Steps::CreateMissingContainers.call(connection, role)
+            Steps::RollContainers.call(connection, role)
           end
         end
       end

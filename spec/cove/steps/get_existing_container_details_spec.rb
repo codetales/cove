@@ -1,4 +1,4 @@
-RSpec.describe Cove::Invocation::Steps::GetExistingContainerDetails do
+RSpec.describe Cove::Steps::GetExistingContainerDetails do
   describe ".call" do
     context "with matching containers" do
       it "returns the container details" do

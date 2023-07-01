@@ -12,13 +12,13 @@ module Cove
       end
 
       def call
-        container_names = connection.capture(*Command::Builder.list_containers_matching(filters), verbosity: Logger::INFO)
+        container_names = connection.capture(*DockerCLI::Container::List.names_matching(filters), verbosity: Logger::INFO)
           .each_line
           .map(&:strip)
           .reject(&:blank?)
         return Runtime::ContainerList.new if container_names.empty?
 
-        json = connection.capture(*Command::Builder.inspect_containers(container_names), verbosity: Logger::INFO)
+        json = connection.capture(*DockerCLI::Container::Inspect.build(container_names), verbosity: Logger::INFO)
         containers = JSON.parse(json).map do |config|
           Runtime::Container.build_from_config(config)
         end

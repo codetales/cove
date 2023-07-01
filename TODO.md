@@ -1,3 +1,5 @@
 # TODO
 
-- Add good tests around the `Command::Builder` to make sure that the commands being created make sense
+- Remove `Command::Builder` in favor of embedding commands
+- Move `Command::Docker` to `Docker::CLI`
+- Rename `Invocation` to `Command`

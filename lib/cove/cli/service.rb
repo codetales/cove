@@ -29,6 +29,12 @@ module Cove
         service = Cove.registry.services[service_name]
         Cove::Invocation::ServiceDown.new(registry: Cove.registry, service: service).invoke
       end
+
+      desc "ps SERVICE", "List all containers and their status for SERVICE"
+      def ps(service_name)
+        service = Cove.registry.services[service_name]
+        Cove::Invocation::ServicePs.new(registry: Cove.registry, service: service).invoke
+      end
     end
   end
 end

@@ -2,10 +2,15 @@ module Cove
   module DockerCLI
     module Container
       class List
+        FORMATS = {
+          id: "{{.ID}}",
+          names: "{{.Names}}"
+        }.freeze
+
         # @param filters [Array<String>]
         # @return [Array<String>]
-        def self.names_matching(*filters)
-          new(all: true, format: "{{.Names}}", filters: filters.flatten).to_cmd
+        def self.matching(*filters, format: FORMATS[:names])
+          new(all: true, format: format, filters: filters.flatten).to_cmd
         end
 
         # @param all [Boolean] Show all containers if set to true (default is false)
@@ -41,8 +46,14 @@ module Cove
         end
 
         def format
-          format = ["--format", format] if format.present?
-          Array(format)
+          format = case @format
+          when Symbol
+            FORMATS[@format]
+          else
+            @format
+          end
+          args = ["--format", format] if format.present?
+          Array(args)
         end
 
         def filters

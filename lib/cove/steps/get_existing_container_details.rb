@@ -12,7 +12,7 @@ module Cove
       end
 
       def call
-        container_names = connection.capture(*DockerCLI::Container::List.names_matching(filters), verbosity: Logger::INFO)
+        container_names = connection.capture(*DockerCLI::Container::List.matching(filters), verbosity: Logger::INFO)
           .each_line
           .map(&:strip)
           .reject(&:blank?)
@@ -30,9 +30,7 @@ module Cove
       # @param [Cove::Entity] entity
       # @return [Array]
       def filters
-        service_or_role.labels.map do |key, value|
-          "label=#{key}=#{value}"
-        end
+        LabelsForEntity.new(service_or_role).to_a
       end
     end
   end

@@ -27,5 +27,10 @@ module Cove
     def roles
       @roles_registry ||= Cove::Registry::Role.new
     end
+
+    # @return [Array<Cove::Role>]
+    def roles_for_service(service)
+      roles.select { |role| role.service == service }
+    end
   end
 end

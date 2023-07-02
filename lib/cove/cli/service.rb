@@ -13,7 +13,7 @@ module Cove
       desc "hosts SERVICE", "List all roles within the service"
       def hosts(service_name)
         service = Cove.registry.services[service_name]
-        Cove.registry.roles.select { |role| role.service == service }.flat_map(&:hosts).uniq.each do |host|
+        Cove.registry.roles_for_service(service).flat_map(&:hosts).uniq.each do |host|
           Cove.output.puts host.name
         end
       end

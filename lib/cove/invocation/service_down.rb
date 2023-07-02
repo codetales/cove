@@ -18,7 +18,7 @@ module Cove
       # @return nil
       def invoke
         service = @service # Need to set a local var to be able to use it in the block below
-        roles = registry.roles.select { |role| role.service == service }
+        roles = registry.roles_for_service(service)
 
         hosts = roles.flat_map(&:hosts).uniq.map(&:sshkit_host)
         on(hosts) do |host|

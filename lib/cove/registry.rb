@@ -32,5 +32,8 @@ module Cove
     def roles_for_service(service)
       roles.select { |role| role.service == service }
     end
+
+    def hosts_for_role(roles)
+    end
   end
 end

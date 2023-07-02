@@ -5,30 +5,28 @@ module Cove
 
       # @return [SSHKit::Backend::Abstract]
       attr_reader :connection
+
+      # @return [Cove::Service, Cove::Role]
       attr_reader :service_or_role
 
       def initialize(connection, service_or_role)
         @connection, @service_or_role = connection, service_or_role
       end
 
+      # @return [Runtime::ContainerList]
       def call
-        container_names = connection.capture(*DockerCLI::Container::List.matching(filters), verbosity: Logger::INFO)
-          .each_line
-          .map(&:strip)
-          .reject(&:blank?)
-        return Runtime::ContainerList.new if container_names.empty?
-
-        json = connection.capture(*DockerCLI::Container::Inspect.build(container_names), verbosity: Logger::INFO)
-        containers = JSON.parse(json).map do |config|
-          Runtime::Container.build_from_config(config)
-        end
-        Runtime::ContainerList.new(containers)
+        CaptureContainerDetails.call(connection, container_names)
       end
 
       private
 
-      # @param [Cove::Entity] entity
-      # @return [Array]
+      def container_names
+        connection.capture(*DockerCLI::Container::List.matching(filters), verbosity: Logger::INFO)
+          .each_line
+          .map(&:strip)
+          .reject(&:blank?)
+      end
+
       def filters
         LabelsForEntity.new(service_or_role).to_a
       end

@@ -13,7 +13,8 @@ module Cove
           service: container.dig("Config", "Labels", "cove.service"),
           role: container.dig("Config", "Labels", "cove.role"),
           version: container.dig("Config", "Labels", "cove.deployed_version"),
-          index: container.dig("Config", "Labels", "cove.index")
+          index: container.dig("Config", "Labels", "cove.index"),
+          health_status: container.dig("State", "Health", "Status")
         )
       end
 
@@ -25,6 +26,15 @@ module Cove
       attribute :role, :string
       attribute :version, :string
       attribute :index, :integer
+      attribute :health_status, :string
+
+      def healthy?
+        if health_status.present?
+          health_status == "healthy"
+        else
+          running?
+        end
+      end
 
       def running?
         status == "running"

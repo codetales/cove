@@ -4,13 +4,12 @@ module Cove
     include ActiveModel::Attributes
 
     def self.from(instance)
-      name = "#{instance.service_name}-#{instance.role_name}-#{instance.version}-#{instance.index}"
       new(
-        name: name,
+        name: instance.name,
         image: instance.image,
         command: instance.command,
         labels: instance.labels,
-        environment_files: [EnvironmentFile.new(instance).host_file_path],
+        environment_files: [EnvironmentFile.new(instance.deployment).host_file_path],
         version: instance.version,
         index: instance.index
       )

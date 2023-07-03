@@ -8,10 +8,6 @@ module Cove
     delegate :role, to: :deployment
     # @return [Cove::Service]
     delegate :service, to: :role
-    # @return [String] The name of the service
-    delegate :name, to: :service, prefix: true
-    # @return [String] The name of the role
-    delegate :name, to: :role, prefix: true
     # @return [String] The version of the deployment
     delegate :version, to: :deployment
     # @return [String] The command to run in the container
@@ -24,6 +20,10 @@ module Cove
     def initialize(deployment, index)
       @deployment = deployment
       @index = index
+    end
+
+    def name
+      "#{service.name}-#{role.name}-#{version}-#{index}"
     end
 
     # @return [Cove::EntityLabels] The labels of the container

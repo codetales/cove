@@ -3,8 +3,9 @@ RSpec.describe Cove::EnvironmentFile do
     it "includes the service and role names" do
       service = Cove::Service.new(name: "foo", image: "app:latest")
       role = Cove::Role.new(name: "web", service: service, hosts: [])
+      deployment = Cove::Deployment.new(role)
 
-      env = described_class.new(role)
+      env = described_class.new(deployment)
       expect(env.host_directory_path).to eq("/var/cove/env/foo/web")
     end
   end
@@ -13,9 +14,10 @@ RSpec.describe Cove::EnvironmentFile do
     it "includes the version of the role" do
       service = Cove::Service.new(name: "foo", image: "app:latest")
       role = Cove::Role.new(name: "web", service: service, hosts: [])
+      deployment = Cove::Deployment.new(role)
 
-      env = described_class.new(role)
-      expect(env.host_file_path).to eq("/var/cove/env/foo/web/#{role.version}.env")
+      env = described_class.new(deployment)
+      expect(env.host_file_path).to eq("/var/cove/env/foo/web/#{deployment.version}.env")
     end
   end
 
@@ -26,8 +28,9 @@ RSpec.describe Cove::EnvironmentFile do
         "FOO" => "bar",
         "BAZ" => "qux"
       })
+      deployment = Cove::Deployment.new(role)
 
-      env = described_class.new(role)
+      env = described_class.new(deployment)
       expect(env.content).to eq(["FOO=bar", "BAZ=qux"].join("\n"))
     end
   end

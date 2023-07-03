@@ -45,10 +45,12 @@ module Cove
 
         def run
           roles.each do |role|
-            Steps::EnsureEnvironmentFileExists.call(connection, role)
-            Steps::PullImage.call(connection, role)
-            Steps::CreateMissingContainers.call(connection, role)
-            Steps::RollContainers.call(connection, role)
+            deployment = Deployment.new(role)
+
+            Steps::EnsureEnvironmentFileExists.call(connection, deployment)
+            Steps::PullImage.call(connection, deployment)
+            Steps::CreateMissingContainers.call(connection, deployment)
+            Steps::RollContainers.call(connection, deployment)
           end
         end
       end

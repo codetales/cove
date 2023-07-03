@@ -43,10 +43,10 @@ module Cove
         end
 
         def run
-          labels = LabelsForEntity.new(service).to_a
-          output = connection.capture(*DockerCLI::Container::List.matching(labels), verbosity: Logger::INFO)
-          output = connection.capture(*DockerCLI::Container::Inspect.build(output.split("\n"), format: :name_with_health), verbosity: Logger::INFO)
-          Cove.output.puts output
+          containers = Steps::GetExistingContainerDetails.call(connection, service)
+          containers.each do |container|
+            Cove.output.puts "#{container.name} #{container.status} #{container.healthy?}"
+          end
         end
       end
     end

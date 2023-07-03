@@ -7,10 +7,12 @@ module Cove
       attr_reader :connection
 
       # @return [Cove::Service, Cove::Role]
-      attr_reader :service_or_role
+      attr_reader :entity
 
-      def initialize(connection, service_or_role)
-        @connection, @service_or_role = connection, service_or_role
+      # @param connection [SSHKit::Backend::Abstract]
+      # @param entity [Cove::Service, Cove::Role, Cove::Deployment, Cove::Instance]
+      def initialize(connection, entity)
+        @connection, @entity = connection, entity
       end
 
       # @return [Runtime::ContainerList]
@@ -28,7 +30,7 @@ module Cove
       end
 
       def filters
-        LabelsForEntity.new(service_or_role).to_a
+        entity.labels.as_filters
       end
     end
   end

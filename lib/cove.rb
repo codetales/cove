@@ -15,7 +15,9 @@ require_relative "cove/registry"
 require_relative "cove/host"
 require_relative "cove/service"
 require_relative "cove/role"
-require_relative "cove/labels_for_entity"
+require_relative "cove/deployment"
+require_relative "cove/instance"
+require_relative "cove/entity_labels"
 require_relative "cove/environment_file"
 require_relative "cove/configuration"
 require_relative "cove/command"
@@ -39,7 +41,7 @@ module Cove
     @output || $stdout
   end
 
-  def self.init(config:)
+  def self.init(config: ENV.fetch("COVE_CONFIG_DIR", "./"))
     @registry = nil
     Initialization.new(config, registry).perform
   end

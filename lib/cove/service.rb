@@ -20,9 +20,9 @@ module Cove
     end
 
     def labels
-      {
+      EntityLabels.new({
         "cove.service" => name
-      }
+      })
     end
   end
 end

@@ -12,8 +12,8 @@ module Cove
               builder += ["--publish", port_mapping]
             end
 
-            Hash(labels).each do |key, value|
-              builder += ["--label", "#{key}=#{value}"]
+            Array(labels).each do |label|
+              builder += ["--label", label]
             end
 
             Array(environment_files).each do |environment_file|

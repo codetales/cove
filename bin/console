@@ -11,5 +11,8 @@ require "cove"
 # require "pry"
 # Pry.start
 
+Cove.init
+include Cove
+
 require "irb"
 IRB.start(__FILE__)

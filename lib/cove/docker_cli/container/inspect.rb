@@ -2,7 +2,7 @@ module Cove
   module DockerCLI
     module Container
       class Inspect
-        # @param filters [Array<String>]
+        # @param container_names [Array<String>]
         # @return [Array<String>]
         def self.build(*container_names)
           new(*container_names).to_cmd

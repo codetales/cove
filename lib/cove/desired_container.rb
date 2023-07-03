@@ -3,16 +3,16 @@ module Cove
     include ActiveModel::API
     include ActiveModel::Attributes
 
-    def self.from(role, index)
-      name = "#{role.service.name}-#{role.name}-#{role.version}-#{index}"
+    def self.from(instance)
+      name = "#{instance.service_name}-#{instance.role_name}-#{instance.version}-#{instance.index}"
       new(
         name: name,
-        image: role.image,
-        command: role.command,
-        labels: role.labels.merge("cove.index" => index), # TODO: We would need to pull the index into the labels. Probalby best to move labels out of the role and into this class.
-        environment_files: [EnvironmentFile.new(role).host_file_path],
-        version: role.version,
-        index: index
+        image: instance.image,
+        command: instance.command,
+        labels: instance.labels,
+        environment_files: [EnvironmentFile.new(instance).host_file_path],
+        version: instance.version,
+        index: instance.index
       )
     end
 

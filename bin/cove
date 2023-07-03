@@ -5,6 +5,6 @@ require "cove"
 
 Thread.report_on_exception = false
 
-Cove.init(config: ENV.fetch("COVE_CONFIG_DIR", "./"))
+Cove.init
 
 Cove::CLI::Main.start(ARGV)

@@ -1,3 +1,4 @@
+require "byebug"
 module Cove
   module Steps
     class RollContainers
@@ -7,9 +8,12 @@ module Cove
       attr_reader :connection
       # @return [Cove::Service]
       attr_reader :role
+      # @return [Cove::Deployment]
+      attr_reader :deployment
 
-      def initialize(connection, role)
-        @connection, @role = connection, role
+      def initialize(connection, deployment)
+        @connection, @deployment = connection, deployment
+        @role = deployment.role
       end
 
       def call
@@ -56,7 +60,10 @@ module Cove
       end
 
       def desired_containers
-        1.upto(role.container_count).map { |index| DesiredContainer.from(role, index) }
+        1.upto(role.container_count).map do |index|
+          instance = Instance.new(deployment, index)
+          DesiredContainer.from(instance)
+        end
       end
     end
   end

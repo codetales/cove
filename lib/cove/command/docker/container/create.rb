@@ -3,7 +3,7 @@ module Cove
     module Docker
       module Container
         class Create
-          def self.build(image:, name: nil, remove: false, interactive: false, labels: {}, command: [], ports: [], extra_arguments: [])
+          def self.build(image:, name: nil, remove: false, interactive: false, labels: {}, command: [], ports: [], environment_files: [], extra_arguments: [])
             builder = [:docker, "container", "create"]
 
             builder += ["--name", name] if name.present?
@@ -12,8 +12,12 @@ module Cove
               builder += ["--publish", port_mapping]
             end
 
-            Hash(labels).each do |key, value|
-              builder += ["--label", "#{key}=#{value}"]
+            Array(labels).each do |label|
+              builder += ["--label", label]
+            end
+
+            Array(environment_files).each do |environment_file|
+              builder += ["--env-file", environment_file]
             end
 
             builder << "--rm" if remove

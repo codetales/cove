@@ -50,3 +50,4 @@ module Cove
     @registry ||= Registry.new
   end
 end
+foobar

@@ -8,6 +8,7 @@ environment:
 
 roles:
   web:
+    container_count: 2
     environment:
       FOO: baz
     hosts:

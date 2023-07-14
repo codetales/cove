@@ -10,6 +10,8 @@ module Cove
     attr_reader :hosts
     # @return [Array<String>] The command to run in the container
     attr_reader :command
+    # @return [Integer] The number of containers to run for this role
+    attr_reader :container_count
     # @return [String] The image this role uses
     delegate :image, to: :service
     # @return [String] The name of the service this role belongs to
@@ -20,12 +22,13 @@ module Cove
     # @param hosts [Array<Cove::Host>] The hosts this role should run on
     # @param command [Array<String>] The command to run in the container
     # @param environment_variables [Hash<String, String>] The environment variables to set in the containers for this role
-    def initialize(name:, service:, hosts:, command: [], environment_variables: {})
+    def initialize(name:, service:, hosts:, container_count: 1, command: [], environment_variables: {})
       @name = name
       @service = service
       @hosts = hosts
       @command = command
       @environment_variables = environment_variables
+      @container_count = container_count || 1
     end
 
     # @return [String]
@@ -38,11 +41,6 @@ module Cove
       service.labels.merge({
         "cove.role" => name
       })
-    end
-
-    # @return [Integer] The number of containers to run for this role
-    def container_count
-      1
     end
   end
 end

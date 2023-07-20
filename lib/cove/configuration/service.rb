@@ -21,6 +21,7 @@ module Cove
             name: role_name,
             service: service,
             container_count: role_config["container_count"],
+            command: role_config["command"],
             environment_variables: role_environment,
             hosts: role_config["hosts"].map { |host_id| @host_registry[host_id] }
           )

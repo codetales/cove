@@ -11,7 +11,8 @@ module Cove
         labels: instance.labels,
         environment_files: [EnvironmentFile.new(instance.deployment).host_file_path],
         version: instance.version,
-        index: instance.index
+        index: instance.index,
+        ports: instance.ports
       )
     end
 

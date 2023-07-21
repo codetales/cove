@@ -9,7 +9,7 @@ module Cove
             builder += ["--name", name] if name.present?
 
             Array(ports).each do |port_mapping|
-              builder += ["--publish", port_mapping]
+              builder += ["--publish", port_mapping["source"].to_s + ":" + port_mapping["target"].to_s]
             end
 
             Array(labels).each do |label|

@@ -37,7 +37,7 @@ module Cove
     private
 
     def build_version
-      Digest::SHA2.hexdigest([role.id, role.image, role.command, role.environment_variables].to_json)[0..12]
+      Digest::SHA2.hexdigest([role.id, role.image, role.command, role.environment_variables, role.ports].to_json)[0..12]
     end
   end
 end

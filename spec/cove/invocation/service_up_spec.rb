@@ -2,7 +2,7 @@ RSpec.describe Cove::Invocation::ServiceUp do
   describe "#invoke" do
     context "with no existing containers" do
       it "should start a container" do
-        registry, service, role = setup_environment(service_name: "test", role_name: "web", image: "app:latest")
+        registry, service, role = setup_environment(service_name: "test", role_name: "web", image: "app:latest", command: ["ping", "8.8.8.8"], ports: [{"type" => "port", "source" => 8080, "target" => 80}])
         deployment = Cove::Deployment.new(role)
         instance = Cove::Instance.new(deployment, 1)
         # TODO: This is invoked twice with different arguments. Should we stub them individually?
@@ -18,7 +18,7 @@ RSpec.describe Cove::Invocation::ServiceUp do
 
         stubs << stub_command(/docker image pull app:latest/).with_exit_status(0)
         stubs << stub_command(/mkdir -p \/var\/cove\/env\/#{service.name}\/#{role.name}/)
-        stubs << stub_command(/docker container create .* #{desired_container.name}/).with_exit_status(0)
+        stubs << stub_command(/docker container create .* #{desired_container.name}.* --publish 8080:80 .* ping 8.8.8.8/).with_exit_status(0)
         stubs << stub_command(/docker container stop legacy_container1/).with_exit_status(0)
         stubs << stub_command(/docker container stop legacy_container2/).with_exit_status(0)
         stubs << stub_command(/docker container start #{desired_container.name}/).with_exit_status(0)
@@ -56,66 +56,6 @@ RSpec.describe Cove::Invocation::ServiceUp do
         stubs << stub_command(/docker container stop legacy_container2/).with_exit_status(0)
         stubs << stub_command(/docker container start #{desired_container1.name}/).with_exit_status(0)
         stubs << stub_command(/docker container start #{desired_container2.name}/).with_exit_status(0)
-        stubs << stub_upload("/var/cove/env/#{service.name}/#{role.name}/#{deployment.version}.env")
-
-        invocation = described_class.new(registry: registry, service: service)
-
-        invocation.invoke
-
-        stubs.each { |stub| expect(stub).to have_been_invoked }
-      end
-
-      it "should start a container with custom commands" do
-        registry, service, role = setup_environment(service_name: "test", role_name: "web", image: "app:latest", command: ["ping", "8.8.8.8"])
-        deployment = Cove::Deployment.new(role)
-        instance = Cove::Instance.new(deployment, 1)
-        # TODO: This is invoked twice with different arguments. Should we stub them individually?
-        allow(Cove::Steps::GetExistingContainerDetails).to receive(:call).with(kind_of(SSHKit::Backend::Abstract), anything) {
-          Cove::Runtime::ContainerList.new([
-            Cove::Runtime::Container.new(id: "1234", name: "legacy_container1", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 1),
-            Cove::Runtime::Container.new(id: "4567", name: "legacy_container2", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 2)
-          ])
-        }
-
-        stubs = []
-        desired_container = Cove::DesiredContainer.from(instance)
-
-        stubs << stub_command(/docker image pull app:latest/).with_exit_status(0)
-        stubs << stub_command(/mkdir -p \/var\/cove\/env\/#{service.name}\/#{role.name}/)
-        stubs << stub_command(/docker container create .* #{desired_container.name} .* ping 8.8.8.8/).with_exit_status(0)
-        stubs << stub_command(/docker container stop legacy_container1/).with_exit_status(0)
-        stubs << stub_command(/docker container stop legacy_container2/).with_exit_status(0)
-        stubs << stub_command(/docker container start #{desired_container.name}/).with_exit_status(0)
-        stubs << stub_upload("/var/cove/env/#{service.name}/#{role.name}/#{deployment.version}.env")
-
-        invocation = described_class.new(registry: registry, service: service)
-
-        invocation.invoke
-
-        stubs.each { |stub| expect(stub).to have_been_invoked }
-      end
-
-      it "should start a container with port mappings" do
-        registry, service, role = setup_environment(service_name: "test", role_name: "web", image: "app:latest", ports: [{"type" => "port", "source" => 8080, "target" => 80}])
-        deployment = Cove::Deployment.new(role)
-        instance = Cove::Instance.new(deployment, 1)
-        # TODO: This is invoked twice with different arguments. Should we stub them individually?
-        allow(Cove::Steps::GetExistingContainerDetails).to receive(:call).with(kind_of(SSHKit::Backend::Abstract), anything) {
-          Cove::Runtime::ContainerList.new([
-            Cove::Runtime::Container.new(id: "1234", name: "legacy_container1", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 1),
-            Cove::Runtime::Container.new(id: "4567", name: "legacy_container2", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 2)
-          ])
-        }
-
-        stubs = []
-        desired_container = Cove::DesiredContainer.from(instance)
-
-        stubs << stub_command(/docker image pull app:latest/).with_exit_status(0)
-        stubs << stub_command(/mkdir -p \/var\/cove\/env\/#{service.name}\/#{role.name}/)
-        stubs << stub_command(/docker container create .* #{desired_container.name}.* --publish 8080:80/).with_exit_status(0)
-        stubs << stub_command(/docker container stop legacy_container1/).with_exit_status(0)
-        stubs << stub_command(/docker container stop legacy_container2/).with_exit_status(0)
-        stubs << stub_command(/docker container start #{desired_container.name}/).with_exit_status(0)
         stubs << stub_upload("/var/cove/env/#{service.name}/#{role.name}/#{deployment.version}.env")
 
         invocation = described_class.new(registry: registry, service: service)

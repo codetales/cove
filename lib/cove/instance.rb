@@ -12,6 +12,8 @@ module Cove
     delegate :version, to: :deployment
     # @return [String] The command to run in the container
     delegate :command, to: :role
+    # @return [Array<Hash>] The port mappings to run in the container
+    delegate :ports, to: :role
     # @return [String] The image of the container
     delegate :image, to: :role
 

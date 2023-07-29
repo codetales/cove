@@ -12,7 +12,8 @@ module Cove
         environment_files: [EnvironmentFile.new(instance.deployment).host_file_path],
         version: instance.version,
         index: instance.index,
-        ports: instance.ports
+        ports: instance.ports,
+        volumes: instance.volumes
       )
     end
 

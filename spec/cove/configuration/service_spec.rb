@@ -137,5 +137,24 @@ RSpec.describe Cove::Configuration::Service do
         expect(role.ports).to eq([{"type" => "port_range", "source" => [8080, 8081], "target" => 80}])
       end
     end
+
+    context "when a volume to mount is provided in the yaml file" do
+      it "builds a role based on the yaml file with the volume" do
+        config_file = "spec/fixtures/services/service_with_mounted_volume.yml"
+        host1 = Cove::Host.new(name: "host1")
+        host2 = Cove::Host.new(name: "host2")
+        host_registry = Cove::Registry::Host.new([host1, host2])
+
+        config = described_class.new(config_file, host_registry).build
+        service = config.service
+        role = config.roles.first
+
+        expect(role.name).to eq("web")
+        expect(role.service).to eq(service)
+        expect(role.hosts).to eq([host1, host2])
+        expect(role.ports).to eq([{"type" => "port", "source" => 8080, "target" => 80}])
+        expect(role.volumes).to eq([{"type" => "volume", "source" => "my-awesome-volume", "target" => "/data"}])
+      end
+    end
   end
 end

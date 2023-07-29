@@ -1,0 +1,17 @@
+---
+name: "nginx"
+image: "nginx:1.23.4"
+
+roles:
+  web:
+    hosts:
+      - host1
+      - host2
+    ingress:
+      - type: port
+        source: 8080
+        target: 80
+    mounts:
+      - type: volume
+        source: my-awesome-volume
+        target: /data

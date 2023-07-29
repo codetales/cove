@@ -114,5 +114,28 @@ RSpec.describe Cove::Configuration::Service do
         expect(role.ports).to eq([{"type" => "port", "source" => 80, "target" => 80}])
       end
     end
+
+    context "when a port range is provided in the yaml file" do
+      it "builds a role based on the yaml file with the ports" do
+        config_file = "spec/fixtures/services/service_with_port_range.yml"
+        host1 = Cove::Host.new(name: "host1")
+        host2 = Cove::Host.new(name: "host2")
+        host_registry = Cove::Registry::Host.new([host1, host2])
+
+        config = described_class.new(config_file, host_registry).build
+        service = config.service
+        role = config.roles.first
+
+        expect(role.name).to eq("web")
+        expect(role.service).to eq(service)
+        expect(role.container_count).to eq(2)
+        expect(role.environment_variables).to eq({
+          "SOME_VAR" => true,
+          "FOO" => "baz"
+        })
+        expect(role.hosts).to eq([host1, host2])
+        expect(role.ports).to eq([{"type" => "port_range", "source" => [8080, 8081], "target" => 80}])
+      end
+    end
   end
 end

@@ -63,13 +63,13 @@ RSpec.describe Cove::Command::Docker::Container::Create do
 
     context "with a mounted volume" do
       it "returns the expected command" do
-        expect(described_class.build(image: "hello-world", name: "my-container", volumes: [{"type" => "volume", "source" => "my-awesome-volume", "target" => "/data"}])).to eq(
+        expect(described_class.build(image: "hello-world", name: "my-container", mounts: [{"type" => "volume", "source" => "my-awesome-volume", "target" => "/data"}])).to eq(
           [
             :docker,
             "container",
             "create",
             "--name", "my-container",
-            "--mount", "type=volume,", "source=my-awesome-volume,", "target=/data",
+            "--mount", "type=volume,source=my-awesome-volume,target=/data",
             "hello-world"
           ]
         )

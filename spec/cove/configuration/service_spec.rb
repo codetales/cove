@@ -153,7 +153,7 @@ RSpec.describe Cove::Configuration::Service do
         expect(role.service).to eq(service)
         expect(role.hosts).to eq([host1, host2])
         expect(role.ports).to eq([{"type" => "port", "source" => 8080, "target" => 80}])
-        expect(role.volumes).to eq([{"type" => "volume", "source" => "my-awesome-volume", "target" => "/data"}])
+        expect(role.mounts).to eq([{"type" => "volume", "source" => "my-awesome-volume", "target" => "/data"}])
       end
     end
   end

@@ -15,7 +15,7 @@ module Cove
     # @return [Array<Hash>] The port mappings to run in the container
     delegate :ports, to: :role
     # @return [Array<Hash>] The volumes to mount to the container
-    delegate :volumes, to: :role
+    delegate :mounts, to: :role
     # @return [String] The image of the container
     delegate :image, to: :role
 

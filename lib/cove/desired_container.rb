@@ -13,7 +13,7 @@ module Cove
         version: instance.version,
         index: instance.index,
         ports: instance.ports,
-        volumes: instance.volumes
+        mounts: instance.mounts
       )
     end
 
@@ -24,7 +24,7 @@ module Cove
     attribute :index, :integer
     attribute :version, :string
     attribute :labels, array: true, default: -> { [] }
-    attribute :volumes, array: true, default: -> { [] }
+    attribute :mounts, array: true, default: -> { [] }
     attribute :ports, array: true, default: -> { [] }
   end
 end

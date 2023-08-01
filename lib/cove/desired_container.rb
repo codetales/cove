@@ -12,7 +12,8 @@ module Cove
         environment_files: [EnvironmentFile.new(instance.deployment).host_file_path],
         version: instance.version,
         index: instance.index,
-        ports: instance.ports
+        ports: instance.ports,
+        mounts: instance.mounts
       )
     end
 
@@ -23,7 +24,7 @@ module Cove
     attribute :index, :integer
     attribute :version, :string
     attribute :labels, array: true, default: -> { [] }
-    attribute :volumes, array: true, default: -> { [] }
+    attribute :mounts, array: true, default: -> { [] }
     attribute :ports, array: true, default: -> { [] }
   end
 end

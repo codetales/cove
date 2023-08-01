@@ -23,6 +23,7 @@ module Cove
             container_count: role_config["container_count"],
             command: role_config["command"],
             ports: role_config["ingress"],
+            mounts: role_config["mounts"],
             environment_variables: role_environment,
             hosts: role_config["hosts"].map { |host_id| @host_registry[host_id] }
           )

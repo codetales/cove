@@ -12,8 +12,8 @@ module Cove
     delegate :version, to: :deployment
     # @return [String] The command to run in the container
     delegate :command, to: :role
-    # @return [Array<Hash>] The port mappings to run in the container
-    delegate :ports, to: :role
+    # @return [Array<Hash>] The port mapping to run in the container
+    attr_reader :ports
     # @return [Array<Hash>] The volumes to mount to the container
     delegate :mounts, to: :role
     # @return [String] The image of the container
@@ -24,6 +24,7 @@ module Cove
     def initialize(deployment, index)
       @deployment = deployment
       @index = index
+      set_ports
     end
 
     def name
@@ -35,6 +36,17 @@ module Cove
       deployment.labels.merge({
         "cove.index" => index.to_s
       })
+    end
+
+    def set_ports
+      @ports = []
+      Array(role.ports).each do |port|
+        if port["type"] == "port"
+          @ports << {"source" => port["source"], "target" => port["target"]}
+        elsif port["type"] == "port_range"
+          @ports << {"source" => port["source"][index - 1], "target" => port["target"]}
+        end
+      end
     end
   end
 end

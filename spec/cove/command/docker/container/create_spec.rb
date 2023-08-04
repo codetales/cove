@@ -33,22 +33,7 @@ RSpec.describe Cove::Command::Docker::Container::Create do
 
     context "with a port mapping" do
       it "returns the expected command" do
-        expect(described_class.build(image: "hello-world", name: "my-container", ports: [{"type" => "port", "source" => 8080, "target" => 80}])).to eq(
-          [
-            :docker,
-            "container",
-            "create",
-            "--name", "my-container",
-            "--publish", "8080:80",
-            "hello-world"
-          ]
-        )
-      end
-    end
-
-    context "with a port range" do
-      it "returns the expected command" do
-        expect(described_class.build(image: "hello-world", index: 1, name: "my-container", ports: [{"type" => "port_range", "source" => [8080, 8081], "target" => 80}])).to eq(
+        expect(described_class.build(image: "hello-world", name: "my-container", ports: [{"source" => 8080, "target" => 80}])).to eq(
           [
             :docker,
             "container",

@@ -3,7 +3,7 @@ module Cove
     module Docker
       module Container
         class Create
-          def self.build(image:, index: nil, name: nil, remove: false, interactive: false, labels: {}, command: [], ports: [], mounts: [], environment_files: [], extra_arguments: [])
+          def self.build(image:, name: nil, remove: false, interactive: false, labels: {}, command: [], ports: [], mounts: [], environment_files: [], extra_arguments: [])
             builder = [:docker, "container", "create"]
 
             builder += ["--name", name] if name.present?

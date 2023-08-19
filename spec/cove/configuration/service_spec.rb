@@ -157,4 +157,54 @@ RSpec.describe Cove::Configuration::Service do
       end
     end
   end
+
+  context "with an invalid service config file" do
+    it "exits when service name or image name is not included" do
+      config_file = "spec/fixtures/services/invalid_service_name_image.yml"
+      host1 = Cove::Host.new(name: "host1")
+      host2 = Cove::Host.new(name: "host2")
+      host_registry = Cove::Registry::Host.new([host1, host2])
+
+      config = described_class.new(config_file, host_registry).build
+
+      expect { config }.to raise_error(SystemExit)
+
+    rescue SystemExit => e
+      expect(e.status).to eq(1)
+
+      expect(Cove.output.string).to eq("{:service_name=>[\"must be filled\"], :image=>[\"must be filled\"]}\n")
+    end
+
+    it "exits when container_count is not an integer" do
+      config_file = "spec/fixtures/services/invalid_service_container_count.yml"
+      host1 = Cove::Host.new(name: "host1")
+      host2 = Cove::Host.new(name: "host2")
+      host_registry = Cove::Registry::Host.new([host1, host2])
+
+      config = described_class.new(config_file, host_registry).build
+
+      expect { config }.to raise_error(SystemExit)
+
+    rescue SystemExit => e
+      expect(e.status).to eq(1)
+
+      expect(Cove.output.string).to eq("{:roles=>{0=>{:container_count=>[\"must be an integer\"]}}}\n")
+    end
+
+    it "exits when port type is not specified" do
+      config_file = "spec/fixtures/services/invalid_service_port_type.yml"
+      host1 = Cove::Host.new(name: "host1")
+      host2 = Cove::Host.new(name: "host2")
+      host_registry = Cove::Registry::Host.new([host1, host2])
+
+      config = described_class.new(config_file, host_registry).build
+
+      expect { config }.to raise_error(SystemExit)
+
+    rescue SystemExit => e
+      expect(e.status).to eq(1)
+
+      expect(Cove.output.string).to eq("{:roles=>{0=>{:ingress=>{:type=>[\"must be port or port range\"]}}}}\n")
+    end
+  end
 end

@@ -1,0 +1,20 @@
+---
+name: "nginx"
+image: "nginx:1.23.4"
+
+environment:
+  FOO: bar
+  SOME_VAR: true
+
+roles:
+  web:
+    container_count: "a"
+    environment:
+      FOO: baz
+    hosts:
+      - host1
+      - host2
+    ingress:
+      - type: port
+        source: 80
+        target: 80

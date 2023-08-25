@@ -10,11 +10,11 @@ module Cove
           required(:roles).value(:array, min_size?: 1).each do
             hash do
               required(:name).filled(:string)
-              optional(:container_count).maybe(:integer)
+              optional(:container_count).filled(:integer)
               optional(:ingress).value(:array).each do
                 hash do
-                  required(:type).filled(:string)
-                  required(:source) { filled? & (int? | array?) }
+                  required(:type).value(included_in?: ["port", "port_range"])
+                  required(:source).value(:filled?)
                   required(:target).filled(:integer)
                 end
               end
@@ -24,8 +24,18 @@ module Cove
 
         rule(:roles).each do
           if value[:ingress].present?
-            value[:ingress].each do |port|
-              key(key.path.keys + [:ingress, :type]).failure("must be port or port range") unless port[:type].eql?("port") | port[:type].eql?("port_range")
+            value[:ingress].each_with_index do |port, ingress_index|
+              if port[:type].eql?("port")
+                key(key.path.keys + [:ingress, ingress_index, :source]).failure("must be an integer") unless port[:source].is_a?(::Integer)
+              elsif port[:type].eql?("port_range")
+                key(key.path.keys + [:ingress, ingress_index, :source]).failure("must be an array of integers") unless port[:source].is_a?(::Array)
+                if port[:source].is_a?(::Array)
+                  key(key.path.keys + [:ingress, ingress_index, :source]).failure("size of source array must be greater than or equal to the container count") if value[:container_count].present? && port[:source].size < value[:container_count]
+                  port[:source].each_with_index do |source, index|
+                    key(key.path.keys + [:ingress, ingress_index, :source]).failure("element #{index} in the array must be an integer") unless source.is_a?(::Integer)
+                  end
+                end
+              end
             end
           end
         end

@@ -4,7 +4,7 @@ module Cove
       def initialize(config_file, host_registry)
         @config_file = config_file
         @host_registry = host_registry
-        validate
+        validate!
       end
 
       def build
@@ -51,7 +51,9 @@ module Cove
         File.read(@config_file)
       end
 
-      def validate
+      private
+
+      def validate!
         contract = Cove::Configuration::Contracts::ServiceContract.new
         result = contract.call(service_name: service_name, image: image, roles: formatted_roles)
         if result.failure?

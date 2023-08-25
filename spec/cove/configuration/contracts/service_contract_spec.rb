@@ -1,6 +1,6 @@
 RSpec.describe Cove::Configuration::Contracts::ServiceContract do
-  context "service name" do
-    it "succeeds when service name is filled" do
+  context "service" do
+    it "succeeds when service name and image are filled" do
       contract = Cove::Configuration::Contracts::ServiceContract.new
       result = contract.call(service_name: "nginx", image: "nginx:1.23.4", roles: [{name: "rolename", container_count: "2"}])
       expect(result.success?).to eq(true)
@@ -8,7 +8,13 @@ RSpec.describe Cove::Configuration::Contracts::ServiceContract do
 
     it "fails when service name is not filled" do
       contract = Cove::Configuration::Contracts::ServiceContract.new
-      result = contract.call(service_name: "", image: "nginx:1.23.4", roles: [{name: "rolename", container_count: "abc"}])
+      result = contract.call(service_name: "", image: "nginx:1.23.4", roles: [{name: "rolename", container_count: 3}])
+      expect(result.success?).to eq(false)
+    end
+
+    it "fails when image is not filled" do
+      contract = Cove::Configuration::Contracts::ServiceContract.new
+      result = contract.call(service_name: "nginx", image: "", roles: [{name: "rolename", container_count: 3}])
       expect(result.success?).to eq(false)
     end
   end
@@ -33,11 +39,16 @@ RSpec.describe Cove::Configuration::Contracts::ServiceContract do
     end
 
     context "container_count" do
-      it "succeeds when container_count is nil" do
+      it "succeeds when container_count is not included" do
         contract = Cove::Configuration::Contracts::ServiceContract.new
-        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", container_count: nil}])
-        puts result.errors.to_h
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web"}])
         expect(result.success?).to eq(true)
+      end
+
+      it "fails when container_count is not an integer" do
+        contract = Cove::Configuration::Contracts::ServiceContract.new
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", container_count: "abc"}])
+        expect(result.success?).to eq(false)
       end
     end
 
@@ -50,19 +61,19 @@ RSpec.describe Cove::Configuration::Contracts::ServiceContract do
 
       it "succeeds when type is port_range" do
         contract = Cove::Configuration::Contracts::ServiceContract.new
-        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", ingress: [{type: "port_range", source: [8080, 8081], target: 80}]}])
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", container_count: 2, ingress: [{type: "port_range", source: [8080, 8081], target: 80}]}])
         expect(result.success?).to eq(true)
+      end
+
+      it "fails when type is not included" do
+        contract = Cove::Configuration::Contracts::ServiceContract.new
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", ingress: [{source: [8080, 8081], target: 80}]}])
+        expect(result.success?).to eq(false)
       end
 
       it "fails when type is not port or port_range" do
         contract = Cove::Configuration::Contracts::ServiceContract.new
         result = contract.call(service_name: "a", image: "b", roles: [{name: "web", ingress: [{type: "something", source: [8080, 8081], target: 80}]}])
-        expect(result.success?).to eq(false)
-      end
-
-      it "fails when type is missing" do
-        contract = Cove::Configuration::Contracts::ServiceContract.new
-        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", ingress: [{source: [8080, 8081], target: 80}]}])
         expect(result.success?).to eq(false)
       end
 
@@ -72,15 +83,39 @@ RSpec.describe Cove::Configuration::Contracts::ServiceContract do
         expect(result.success?).to eq(false)
       end
 
-      it "fails when target is not included" do
-        contract = Cove::Configuration::Contracts::ServiceContract.new
-        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", ingress: [{type: "port_range", source: 80}]}])
-        expect(result.success?).to eq(false)
-      end
-
       it "fails when source is not an integer" do
         contract = Cove::Configuration::Contracts::ServiceContract.new
         result = contract.call(service_name: "a", image: "b", roles: [{name: "web", ingress: [{type: "port", source: "eighty", target: 80}]}])
+        expect(result.success?).to eq(false)
+      end
+
+      it "fails when source is not an array" do
+        contract = Cove::Configuration::Contracts::ServiceContract.new
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", ingress: [{type: "port_range", source: 8080, target: 80}]}])
+        expect(result.success?).to eq(false)
+      end
+
+      it "fails when source is an array of non-integers" do
+        contract = Cove::Configuration::Contracts::ServiceContract.new
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", ingress: [{type: "port_range", source: [8080, "abc"], target: 80}]}])
+        expect(result.success?).to eq(false)
+      end
+
+      it "fails when the size of the source array is less than the container count " do
+        contract = Cove::Configuration::Contracts::ServiceContract.new
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", container_count: 4, ingress: [{type: "port_range", source: [8080, 8081], target: 80}]}])
+        expect(result.success?).to eq(false)
+      end
+
+      it "fails when target is not included" do
+        contract = Cove::Configuration::Contracts::ServiceContract.new
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", ingress: [{type: "port", source: 8080}]}])
+        expect(result.success?).to eq(false)
+      end
+
+      it "fails when target is not an integer" do
+        contract = Cove::Configuration::Contracts::ServiceContract.new
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", ingress: [{type: "port", source: 8080, target: "abc"}]}])
         expect(result.success?).to eq(false)
       end
     end

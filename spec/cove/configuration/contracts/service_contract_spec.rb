@@ -126,5 +126,41 @@ RSpec.describe Cove::Configuration::Contracts::ServiceContract do
         expect(result.success?).to eq(false)
       end
     end
+
+    context "mounts" do
+      it "succeeds when mounts are included" do
+        contract = Cove::Configuration::Contracts::ServiceContract.new
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", mounts: [{type: "volume", source: "my-awesome-volume", target: "/data"}]}])
+        expect(result.success?).to eq(true)
+      end
+
+      it "fails when type is invalid" do
+        contract = Cove::Configuration::Contracts::ServiceContract.new
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", mounts: [{type: "foo", source: "my-awesome-volume", target: "/data"}]}])
+        expect(result.errors[:roles][0][:mounts][0][:type]).to be_present
+        expect(result.success?).to eq(false)
+      end
+
+      it "fails when type is not included" do
+        contract = Cove::Configuration::Contracts::ServiceContract.new
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", mounts: [{source: "my-awesome-volume", target: "/data"}]}])
+        expect(result.errors[:roles][0][:mounts][0][:type]).to be_present
+        expect(result.success?).to eq(false)
+      end
+
+      it "fails when source is not included" do
+        contract = Cove::Configuration::Contracts::ServiceContract.new
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", mounts: [{type: "volume", target: "/data"}]}])
+        expect(result.errors[:roles][0][:mounts][0][:source]).to be_present
+        expect(result.success?).to eq(false)
+      end
+
+      it "fails when target is not included" do
+        contract = Cove::Configuration::Contracts::ServiceContract.new
+        result = contract.call(service_name: "a", image: "b", roles: [{name: "web", mounts: [{type: "volume", source: "my-awesome-volume"}]}])
+        expect(result.errors[:roles][0][:mounts][0][:target]).to be_present
+        expect(result.success?).to eq(false)
+      end
+    end
   end
 end

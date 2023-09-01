@@ -64,7 +64,7 @@ module Cove
 
       def formatted_roles
         config["roles"].map do |role_name, role_config|
-          {name: role_name, container_count: role_config["container_count"], ingress: role_config["ingress"]}.compact
+          {name: role_name, container_count: role_config["container_count"], ingress: role_config["ingress"], mounts: role_config["mounts"]}.compact
         end
       end
     end

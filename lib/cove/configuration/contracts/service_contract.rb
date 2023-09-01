@@ -18,6 +18,13 @@ module Cove
                   required(:target).filled(:integer)
                 end
               end
+              optional(:mounts).value(:array).each do
+                hash do
+                  required(:type).value(eql?: "volume")
+                  required(:source).filled(:string)
+                  required(:target).filled(:string)
+                end
+              end
             end
           end
         end

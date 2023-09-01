@@ -22,14 +22,7 @@ module Cove
           end
         end
 
-        role_names = []
-
         rule(:roles).each do |index:|
-          if index == 0
-            role_names.clear
-          end
-          key([:roles, index, :name]).failure("#{value[:name]} is not a valid name. The name for each role must be unique.") if role_names.include?(value[:name])
-          role_names << value[:name]
           if value[:ingress].present?
             value[:ingress].each_with_index do |ingress, ingress_index|
               source_key = key([:roles, index, :ingress, ingress_index, :source])

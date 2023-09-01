@@ -35,22 +35,6 @@ RSpec.describe Cove::Configuration::Contracts::ServiceContract do
       expect(result.success?).to eq(true)
     end
 
-    context "name" do
-      it "fails when a role does not have a name" do
-        contract = Cove::Configuration::Contracts::ServiceContract.new
-        result = contract.call(service_name: "a", image: "b", roles: [{container_count: 2}])
-        expect(result.errors[:roles][0][:name]).to be_present
-        expect(result.success?).to eq(false)
-      end
-
-      it "fails with duplicate role names" do
-        contract = Cove::Configuration::Contracts::ServiceContract.new
-        result = contract.call(service_name: "nginx", image: "nginx:1.23.4", roles: [{name: "web"}, {name: "web"}, {name: "web2"}])
-        expect(result.errors[:roles][1][:name]).to be_present
-        expect(result.success?).to eq(false)
-      end
-    end
-
     context "container_count" do
       it "succeeds when container_count is not included" do
         contract = Cove::Configuration::Contracts::ServiceContract.new

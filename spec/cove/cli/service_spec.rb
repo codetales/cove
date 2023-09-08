@@ -32,4 +32,18 @@ RSpec.describe Cove::CLI::Service do
       described_class.new.invoke(:up, ["nginx"])
     end
   end
+
+  describe "#runCustom" do
+    it "runs a container with a custom command" do
+      Cove.init(config: "spec/fixtures/configs/basic/")
+
+      expect(Kernel).to receive(:exec)
+      described_class.new.invoke(:runCustom, ["nginx"], ["echo hello"])
+
+      expect(Cove.output.string).to match(/nginx/)
+      expect(Cove.output.string).to match(/web/)
+      expect(Cove.output.string).to match(/host1/)
+      expect(Cove.output.string).to match(/echo hello/)
+    end
+  end
 end

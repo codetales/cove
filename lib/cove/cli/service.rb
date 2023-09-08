@@ -46,6 +46,48 @@ module Cove
         # on the host(s).
         Kernel.exit(0)
       end
+
+      desc "run SERVICE with COMMANDS", "Run a container with custom commands for SERVICE"
+      option :role
+      option :instance
+      option :host
+      def runCustom(service_name, custom_command)
+        service = Cove.registry.services[service_name]
+        custom_cmd = custom_command.split
+
+        role = if options[:role]
+          Cove.registry.roles_for_service(service).bsearch { |x| x.name == options[:role] }
+        else
+          Cove.registry.roles_for_service(service).first
+        end
+
+        host = if options[:host]
+          Cove.registry.hosts[options[:host]]
+        else
+          role.hosts.first
+        end
+
+        index = options[:instance] || 1
+
+        Cove.output.puts "service: #{service_name}, role: #{role.name}, host: #{host.name}, instance: #{index}, commands: #{custom_command}."
+
+        version = Digest::SHA2.hexdigest([role.id, role.image, custom_cmd, role.environment_variables, []].to_json)[0..12]
+        deployment = Cove::Deployment.new(role, version: version)
+        instance = Cove::Instance.new(deployment, index)
+        desired_container = Cove::DesiredContainer.from(instance)
+        desired_container.command = custom_cmd
+        desired_container.ports = []
+
+        ssh_cmd = ["ssh", "-t", host.ssh_destination_string]
+        run_cmd = Cove::Command::Builder.run_container(desired_container)
+
+        cmd = ssh_cmd + run_cmd
+
+        run_locally do
+          info "Connecting to host #{host.name} and running container #{desired_container.name} via #{cmd.join(" ")}"
+          Kernel.exec(*cmd)
+        end
+      end
     end
   end
 end

@@ -24,6 +24,12 @@ module Cove
         Docker::Container::Create.build(image: config.image, name: config.name, labels: config.labels, command: config.command, environment_files: config.environment_files, ports: config.ports, mounts: config.mounts)
       end
 
+      # @param [Cove::DesiredContainer] config
+      # @return [Array] The command to create the container
+      def self.run_container(config)
+        Docker::Container::Run.build(image: config.image, name: config.name, remove: true, detach: false, interactive: true, labels: config.labels, command: config.command, ports: config.ports, mounts: config.mounts)
+      end
+
       # @param [String] image The image to pull
       # @return [Array] The command to pull the image
       def self.pull_image(image)

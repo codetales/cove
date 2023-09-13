@@ -36,14 +36,18 @@ RSpec.describe Cove::CLI::Service do
   describe "#runCustom" do
     it "runs a container with a custom command" do
       Cove.init(config: "spec/fixtures/configs/basic/")
+      service = Cove.registry.services["nginx"]
+      role = Cove.registry.roles_for_service(service).first
+      host = role.hosts.first
 
-      expect(Kernel).to receive(:exec)
+      expect(Cove::Invocation::ServiceRun).to receive(:new).with(
+        registry: Cove.registry,
+        service: service,
+        custom_cmd: ["echo", "hello"],
+        role: role,
+        host: host
+      ) { double(invoke: nil) }
       described_class.new.invoke(:runCustom, ["nginx"], ["echo hello"])
-
-      expect(Cove.output.string).to match(/nginx/)
-      expect(Cove.output.string).to match(/web/)
-      expect(Cove.output.string).to match(/host1/)
-      expect(Cove.output.string).to match(/echo hello/)
     end
   end
 end

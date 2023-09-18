@@ -7,8 +7,11 @@ module Cove
       attr_reader :registry
       # @return [Cove::Service]
       attr_reader :service
+      # @return [Array<String>]
       attr_reader :custom_cmd
+      # @return [Cove::Role]
       attr_reader :role
+      # @return [Cove::Host]
       attr_reader :host
 
       # @param registry [Cove::Registry]
@@ -29,22 +32,10 @@ module Cove
         Cove.output.puts "service: #{service.name}, role: #{role.name}, host: #{host.name}, commands: #{custom_cmd}."
         deployment = Cove::Deployment.new(role)
         instance_on_demand = Cove::InstanceOnDemand.new(deployment, custom_cmd)
-        desired_container = Cove::DesiredContainer.new(
-          name: instance_on_demand.name,
-          image: instance_on_demand.image,
-          command: instance_on_demand.command,
-          labels: instance_on_demand.labels,
-          environment_files: [EnvironmentFile.new(instance_on_demand.deployment).host_file_path],
-          version: instance_on_demand.version,
-          ports: instance_on_demand.ports,
-          mounts: instance_on_demand.mounts
-        )
-        ssh_cmd = ["ssh", "-t", host.ssh_destination_string]
-        create_cmd = Cove::Command::Builder.create_container(desired_container, remove: true, interactive: true)
-        start_cmd = Cove::Command::Builder.start_attached_container(desired_container.name)
-        create_cmd = create_cmd.map { |el| el.to_s }
-        start_cmd = ssh_cmd + start_cmd
-        start_cmd = start_cmd.map { |el| el.to_s }
+        desired_container = Cove::DesiredContainer.from(instance_on_demand)
+
+        create_cmd = create_cmd(desired_container)
+        start_cmd = start_cmd(desired_container.name)
 
         on(host.sshkit_host) do
           Steps::EnsureEnvironmentFileExists.call(self, deployment)
@@ -57,6 +48,18 @@ module Cove
           info "Starting container #{desired_container.name}"
           Kernel.exec(*start_cmd)
         end
+      end
+
+      private
+
+      # @return [Array<String>]
+      def create_cmd(desired_container)
+        Cove::Command::Builder.create_container(desired_container, remove: true, interactive: true).map(&:to_s)
+      end
+
+      # @return [Array<String>]
+      def start_cmd(container_name)
+        (["ssh", "-t", host.ssh_destination_string] + Cove::Command::Builder.start_attached_container(container_name)).map(&:to_s)
       end
     end
   end

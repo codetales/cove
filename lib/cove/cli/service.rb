@@ -48,9 +48,9 @@ module Cove
       end
 
       desc "run SERVICE with COMMANDS", "Run a container with custom commands for SERVICE"
-      option :role
-      option :host
-      def runCustom(service_name, command)
+      option :role, type: :string
+      option :host, type: :string
+      def run_custom(service_name, command)
         service = Cove.registry.services[service_name]
         command = command.split
 

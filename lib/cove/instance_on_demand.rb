@@ -2,6 +2,8 @@ module Cove
   class InstanceOnDemand
     # @return [Cove::Deployment]
     attr_reader :deployment
+    # @return [Integer]
+    attr_reader :index
     # @return [Cove::Role]
     delegate :role, to: :deployment
     # @return [Cove::Service]
@@ -24,10 +26,11 @@ module Cove
       @deployment = deployment
       @command = command
       @ports = []
+      @index = 1
     end
 
     def name
-      "#{service.name}-#{role.name}-#{version}"
+      "#{service.name}-#{role.name}-#{version}-run-#{SecureRandom.hex(3)}"
     end
 
     def labels

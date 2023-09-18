@@ -12,7 +12,7 @@ RSpec.describe Cove::Invocation::ServiceRun do
 
       stubs << stub_command(/docker image pull app:latest/).with_exit_status(0)
       stubs << stub_command(/mkdir -p \/var\/cove\/env\/#{service.name}\/#{role.name}/)
-      stubs << stub_command(/.* docker container create .* #{desired_container.name}.* --mount type=volume,source="my-volume",target="\/data" .* --rm -it .* echo hello/).with_exit_status(0)
+      stubs << stub_command(/.* docker container create .* #{desired_container.name}.* --mount type=volume,source=my-volume,target=\/data .* --rm -it .* echo hello/).with_exit_status(0)
       stubs << stub_upload("/var/cove/env/#{service.name}/#{role.name}/#{deployment.version}.env")
 
       expect(Kernel).to receive(:exec).with("ssh", "-t", "1.1.1.1", "docker", "container", "start", "--attach", "-i", "#{desired_container.name}")

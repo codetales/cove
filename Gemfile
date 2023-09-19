@@ -14,3 +14,5 @@ gem "standard", "~> 1.3"
 gem "solargraph"
 
 gem "byebug"
+
+gem "dry-validation"

@@ -5,6 +5,7 @@ require "active_model"
 require "thor"
 require "sshkit"
 require "sshkit/dsl"
+require "airbrussh"
 require "yaml"
 
 require_relative "cove/dotenv"

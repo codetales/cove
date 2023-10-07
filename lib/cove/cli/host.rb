@@ -10,7 +10,7 @@ module Cove
         end
       end
 
-      desc "ssh HOST", "Connec to HOST via SSH"
+      desc "ssh HOST", "Connect to HOST via SSH"
       def ssh(host)
         host = Cove.registry.hosts[host]
         command = ["ssh", "-t", host.ssh_destination_string]

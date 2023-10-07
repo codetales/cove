@@ -13,11 +13,17 @@ module Cove
     end
 
     def perform
+      apply_settings
       init_hosts
       init_services
     end
 
     private
+
+    def apply_settings
+      # TODO: This is where we would apply settings from the config file
+      # SSHKit.config.output = Airbrussh::Formatter.new(Cove.output)
+    end
 
     def init_hosts
       host_config = Configuration::Hosts.new(File.join(config_path, "hosts.yml"))

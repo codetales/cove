@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   spec.add_dependency "activesupport", "~> 7.0"
   spec.add_dependency "activemodel", "~> 7.0"
+  spec.add_dependency "airbrussh", "~> 1.4.2"
   spec.add_dependency "dotenv", "~> 2.8"
   spec.add_dependency "sshkit", "~> 1.21"
   spec.add_dependency "thor", "~> 1.2"

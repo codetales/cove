@@ -17,6 +17,7 @@ RSpec.configure do |config|
 
   config.before do
     Cove.output = StringIO.new
+    SSHKit.config.output = SSHKit::Formatter::Pretty.new(Cove.output)
     SSHKitTest::Commander.reset
   end
 

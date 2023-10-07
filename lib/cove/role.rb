@@ -39,7 +39,7 @@ module Cove
 
     # @return [String]
     def id
-      "#{service.name}.#{name}"
+      "#{service.name}/#{name}"
     end
 
     # @return [Cove::EntityLabels] The labels for this role

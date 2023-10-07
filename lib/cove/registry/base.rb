@@ -1,8 +1,9 @@
 module Cove
   class Registry
+    class InvalidEntity < StandardError; end
+
     class Base
       include Enumerable
-
       delegate :size, :each, to: :all
 
       def initialize(entities = [])
@@ -23,7 +24,13 @@ module Cove
       end
 
       def [](id)
-        @entities_by_id[id]
+        @entities_by_id[id] || raise(InvalidEntity, "No #{entity_type} found for `#{id}`")
+      end
+
+      private
+
+      def entity_type
+        self.class.name.demodulize.downcase
       end
     end
   end

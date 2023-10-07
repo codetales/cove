@@ -28,12 +28,22 @@ module Cove
       @roles_registry ||= Cove::Registry::Role.new
     end
 
+    # @param role [Cove::Role]
+    # @return [Array<Cove::Host>]
+    def hosts_for_service(service)
+      hosts_for_roles(*roles_for_service(service))
+    end
+
+    # @param roles [Array<Cove::Role>]
+    # @return [Array<Cove::Host>]
+    def hosts_for_roles(*roles)
+      roles.flatten.compact.flat_map(&:hosts).uniq.map { |hostname| hosts[hostname] }
+    end
+
+    # @param service [Cove::Service]
     # @return [Array<Cove::Role>]
     def roles_for_service(service)
       roles.select { |role| role.service == service }
-    end
-
-    def hosts_for_role(roles)
     end
   end
 end

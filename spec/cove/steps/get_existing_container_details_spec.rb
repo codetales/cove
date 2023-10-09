@@ -5,7 +5,7 @@ RSpec.describe Cove::Steps::GetExistingContainerDetails do
         host = Cove::Host.new(name: "host1")
         service = Cove::Service.new(name: "test-service", image: "nginx:latest")
         role = Cove::Role.new(name: "web", hosts: [host], service: service)
-        connection = SSHKitTest::Backend.new(host.sshkit_host)
+        connection = SSHTestKit::Backend.new(host.sshkit_host)
 
         stub_command(/docker container ls --all --no-trunc --format {{.Names}} --filter label=cove.service=test-service --filter label=cove.role=web$/)
           .with_stdout("container1\ncontainer2\n")
@@ -58,7 +58,7 @@ RSpec.describe Cove::Steps::GetExistingContainerDetails do
       it "returns an empty list" do
         host = Cove::Host.new(name: "host1")
         service = Cove::Service.new(name: "test-service", image: "nginx:latest")
-        connection = SSHKitTest::Backend.new(host.sshkit_host)
+        connection = SSHTestKit::Backend.new(host.sshkit_host)
 
         stub_command(/docker container ls.*--filter label=cove.service=test-service/)
           .with_stdout("\n")

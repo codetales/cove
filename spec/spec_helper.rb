@@ -2,6 +2,8 @@
 
 require "cove"
 require "byebug"
+require "mocktail"
+
 Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")].sort.each { |f| require f }
 
 RSpec.configure do |config|
@@ -18,9 +20,13 @@ RSpec.configure do |config|
   config.before do
     Cove.output = StringIO.new
     SSHKit.config.output = SSHKit::Formatter::Pretty.new(Cove.output)
-    SSHKitTest::Commander.reset
+    SSHTestKit.reset!
   end
 
-  config.include(SSHKitTest)
-  SSHKit.config.backend = SSHKitTest::Backend
+  config.include(SSHTestKit::StubHelpers)
+  config.include(SSHTestKit::RSpecMatchers)
+  SSHKit.config.backend = SSHTestKit::Backend
+
+  config.include Mocktail::DSL
+  config.after(:example) { Mocktail.reset }
 end

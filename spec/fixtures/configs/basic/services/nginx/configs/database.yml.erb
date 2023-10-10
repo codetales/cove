@@ -1,0 +1,15 @@
+production:
+  <<: *default
+  adapter: postgresql_makara
+  prepared_statements: false
+  makara:
+    id: postgres
+    sticky: true
+    connections:
+      - role: master
+        blacklist_duration: 0
+        url: postgresql://<%= secrets["pg.username"] %>:<%= secrets.pg.password %>@<% host.find("db-primary").ip %>:<%= vars["pg.port"] %>/something_production
+      - role: slave
+        url: postgresql://<%= secrets["pg.username"] %>:<%= secrets.pg.password %>@<% host.find("db-secondary").ip %>:<%= vars["pg.port"] %>/something_production
+
+

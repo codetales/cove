@@ -6,7 +6,7 @@ RSpec.describe Cove::EnvironmentFile do
       deployment = Cove::Deployment.new(role)
 
       env = described_class.new(deployment)
-      expect(env.host_directory_path).to eq("/var/cove/env/foo/web")
+      expect(env.host_directory_path).to eq("/var/lib/cove/env/foo/web")
     end
   end
 
@@ -17,7 +17,7 @@ RSpec.describe Cove::EnvironmentFile do
       deployment = Cove::Deployment.new(role)
 
       env = described_class.new(deployment)
-      expect(env.host_file_path).to eq("/var/cove/env/foo/web/#{deployment.version}.env")
+      expect(env.host_file_path).to eq("/var/lib/cove/env/foo/web/#{deployment.version}.env")
     end
   end
 

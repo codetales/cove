@@ -34,7 +34,7 @@ module Cove
     end
 
     def make
-      Cove::DeploymentConfigEntry.new(
+      Cove::DeploymentConfigEntry.new
     end
   end
 

@@ -23,6 +23,10 @@ loader.setup
 module Cove
   class Error < StandardError; end
 
+  def self.host_base_dir
+    "/var/lib/cove"
+  end
+
   def self.output=(output)
     @output = output
   end

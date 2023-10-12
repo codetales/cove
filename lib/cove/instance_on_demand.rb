@@ -33,7 +33,11 @@ module Cove
       "#{service.name}-#{role.name}-#{version}-run-#{SecureRandom.hex(3)}"
     end
 
+    # @return [Cove::EntityLabels] The labels of the container
     def labels
+      deployment.labels.merge({
+        "cove.type" => "on-demand"
+      })
     end
   end
 end

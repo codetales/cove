@@ -20,8 +20,8 @@ module Cove
       # @param role [Cove::Role]
       # @param host [Cove::Host]
       def initialize(registry:, service:, custom_cmd:, role:, host:)
-        @service = service
         @registry = registry
+        @service = service
         @custom_cmd = custom_cmd
         @role = role
         @host = host
@@ -52,14 +52,16 @@ module Cove
 
       private
 
+      # @param desired_container [Cove::DesiredContainer]
       # @return [Array<String>]
       def create_cmd(desired_container)
         Cove::Command::Builder.create_container(desired_container, remove: true, interactive: true).map(&:to_s)
       end
 
+      # @param container_name [String]
       # @return [Array<String>]
       def start_cmd(container_name)
-        (["ssh", "-t", host.ssh_destination_string] + Cove::Command::Builder.start_attached_container(container_name)).map(&:to_s)
+        (["ssh", "-t", host.ssh_destination_string] + Cove::Command::Builder.start_container_and_attach(container_name)).map(&:to_s)
       end
     end
   end

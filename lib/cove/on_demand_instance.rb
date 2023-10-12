@@ -1,5 +1,5 @@
 module Cove
-  class InstanceOnDemand
+  class OnDemandInstance
     # @return [Cove::Deployment]
     attr_reader :deployment
     # @return [Integer]

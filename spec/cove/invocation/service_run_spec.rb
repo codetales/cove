@@ -4,7 +4,7 @@ RSpec.describe Cove::Invocation::ServiceRun do
       custom_cmd = ["echo", "hello"]
       registry, service, role, host = setup_environment(service_name: "test", role_name: "web", image: "app:latest", command: ["ping", "8.8.8.8"], ports: [{"type" => "port", "source" => 8080, "target" => 80}], mounts: [{"type" => "volume", "source" => "my-volume", "target" => "/data"}])
       deployment = Cove::Deployment.new(role)
-      instance_on_demand = Cove::InstanceOnDemand.new(deployment, custom_cmd)
+      instance_on_demand = Cove::OnDemandInstance.new(deployment, custom_cmd)
       allow(SecureRandom).to receive(:hex).with(3).and_return("abc123")
 
       stubs = []

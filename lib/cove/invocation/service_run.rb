@@ -31,7 +31,7 @@ module Cove
       def invoke
         Cove.output.puts "service: #{service.name}, role: #{role.name}, host: #{host.name}, commands: #{custom_cmd}."
         deployment = Cove::Deployment.new(role)
-        instance_on_demand = Cove::InstanceOnDemand.new(deployment, custom_cmd)
+        instance_on_demand = Cove::OnDemandInstance.new(deployment, custom_cmd)
         desired_container = Cove::DesiredContainer.from(instance_on_demand)
 
         create_cmd = create_cmd(desired_container)

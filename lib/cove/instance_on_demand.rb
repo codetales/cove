@@ -10,7 +10,7 @@ module Cove
     delegate :service, to: :role
     # @return [String] The version of the deployment
     delegate :version, to: :deployment
-    # @return [String] The command to run in the container
+    # @return [Array<String>] The command to run in the container
     attr_reader :command
     # @return [Array<Hash>] The port mapping to run in the container
     attr_reader :ports
@@ -22,6 +22,7 @@ module Cove
     delegate :labels, to: :deployment
 
     # @param deployment [Cove::Deployment] The deployment the container is part of
+    # @param command [Array<String>] The custom command to run in the container
     def initialize(deployment, command)
       @deployment = deployment
       @command = command
@@ -29,6 +30,7 @@ module Cove
       @index = 1
     end
 
+    # @return [String]
     def name
       "#{service.name}-#{role.name}-#{version}-run-#{SecureRandom.hex(3)}"
     end

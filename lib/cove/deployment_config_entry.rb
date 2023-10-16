@@ -1,6 +1,6 @@
 module Cove
   class DeploymentConfigEntry
-    def initialize(base_path)
+    def initialize
     end
 
     def files

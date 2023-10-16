@@ -1,43 +1,4 @@
 module Cove
-  class DeploymentConfigVersionDigest
-    def append(config_file)
-    end
-
-    def build
-    end
-  end
-
-  class DeploymentConfigPathBuilder
-    def initialize(parent = nil)
-      @parent = parent
-    end
-
-    def set(path)
-      @path = path
-    end
-
-    def get
-      if @parent
-        File.join(@parent.get, @path)
-      else
-        @path
-      end
-    end
-
-    def append(path)
-      self.class.new(self).set(path)
-    end
-  end
-
-  class DeploymentConfigEntryAssembly
-    def initialize(deployment:, config:, path_builder:, config_version_digest:)
-    end
-
-    def make
-      Cove::DeploymentConfigEntry.new
-    end
-  end
-
   class DeploymentConfigAssembly
     # @return [Cove::Deployment]
     attr_reader :deployment

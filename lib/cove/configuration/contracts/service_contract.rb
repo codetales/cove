@@ -1,5 +1,3 @@
-require "dry-validation"
-
 module Cove
   module Configuration
     module Contracts

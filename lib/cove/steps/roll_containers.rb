@@ -1,4 +1,3 @@
-require "byebug"
 module Cove
   module Steps
     class RollContainers

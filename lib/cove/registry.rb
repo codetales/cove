@@ -1,8 +1,3 @@
-require_relative "registry/base"
-require_relative "registry/host"
-require_relative "registry/service"
-require_relative "registry/role"
-
 module Cove
   class Registry
     def self.build(hosts: [], services: [], roles: [])

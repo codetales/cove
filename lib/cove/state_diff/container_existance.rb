@@ -1,5 +1,5 @@
 module Cove
-  class StateDiff
+  module StateDiff
     class ContainerExistance
       def initialize(existing_containers, desired_containers)
         @existing_containers = existing_containers

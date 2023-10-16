@@ -1,6 +1,3 @@
-require "yaml"
-require "cove/host"
-
 module Cove
   module Configuration
     class Hosts

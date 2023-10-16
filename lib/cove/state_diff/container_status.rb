@@ -1,5 +1,5 @@
 module Cove
-  class StateDiff
+  module StateDiff
     class ContainerStatus
       # @return [Array<Cove::Runtime::Container>]
       attr_reader :existing_containers

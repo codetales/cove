@@ -2,34 +2,23 @@
 
 require "active_support/all"
 require "active_model"
+require "dry-validation"
 require "thor"
 require "sshkit"
 require "sshkit/dsl"
 require "airbrussh"
 require "yaml"
+require "zeitwerk"
+require "dotenv"
 
-require_relative "cove/dotenv"
+Dotenv.load(".env.local", ".env")
 
-require_relative "cove/callable"
-require_relative "cove/version"
-require_relative "cove/registry"
-require_relative "cove/host"
-require_relative "cove/service"
-require_relative "cove/role"
-require_relative "cove/deployment"
-require_relative "cove/instance"
-require_relative "cove/entity_labels"
-require_relative "cove/environment_file"
-require_relative "cove/configuration"
-require_relative "cove/command"
-require_relative "cove/cli"
-require_relative "cove/initialization"
-require_relative "cove/docker_cli"
-require_relative "cove/steps"
-require_relative "cove/invocation"
-require_relative "cove/desired_container"
-require_relative "cove/state_diff"
-require_relative "cove/runtime"
+loader = Zeitwerk::Loader.for_gem
+loader.inflector.inflect(
+  "cli" => "CLI",
+  "docker_cli" => "DockerCLI"
+)
+loader.setup
 
 module Cove
   class Error < StandardError; end

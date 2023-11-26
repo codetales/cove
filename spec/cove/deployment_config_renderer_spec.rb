@@ -1,7 +1,5 @@
-require "cove/deployment_config"
-
-RSpec.describe Cove::DeploymentConfig do
-  describe "#render" do
+RSpec.describe Cove::DeploymentConfigRenderer do
+  describe "#call" do
     it "renders the config" do
       host1 = Cove::Host.new(name: "host1", hostname: "192.168.1.1")
       host2 = Cove::Host.new(name: "host2", hostname: "192.168.1.2")
@@ -9,9 +7,9 @@ RSpec.describe Cove::DeploymentConfig do
       service1 = Cove::Service.new(name: "postgres", image: "postgres:latest")
       service2 = Cove::Service.new(name: "app", image: "app:latest")
 
-      role1 = Cove::Role.new(name: "primary", service: service1, hosts: ["host1"])
-      role2 = Cove::Role.new(name: "web", service: service2, hosts: ["host1"])
-      role3 = Cove::Role.new(name: "worker", service: service2, hosts: ["host2"])
+      role1 = Cove::Role.new(name: "primary", service: service1, hosts: [host1])
+      role2 = Cove::Role.new(name: "web", service: service2, hosts: [host1])
+      role3 = Cove::Role.new(name: "worker", service: service2, hosts: [host2])
 
       deployment = Cove::Deployment.new(role1, version: "abc")
 
@@ -37,7 +35,7 @@ RSpec.describe Cove::DeploymentConfig do
         host2|192.168.1.2
       OUTPUT
 
-      output = described_class.new(registry, deployment).render(erb)
+      output = described_class.new(registry, deployment).call(erb)
 
       expect(output).to eq(expected_output)
     end

@@ -8,11 +8,9 @@ module Cove
     delegate :container_count, to: :role
     # @return [String] The name of the role of the deployment
     delegate :name, to: :role, prefix: true
-    # @return [String] The name of the service of the deployment
-    delegate :name, to: :service, prefix: true
     # @return [Hash] The environment variables for the deployment
     delegate :environment_variables, to: :role
-
+    # @return [String] The image of the deployment
     delegate :image, to: :role
 
     # param [Cove::Role] role The role to deploy
@@ -20,6 +18,26 @@ module Cove
     def initialize(role, version: nil)
       @role = role
       @version = version
+    end
+
+    # @return [String] The name of the service of the deployment
+    def service_name
+      service.name
+    end
+
+    # @return [String] The id of the service of the deployment
+    def service_id
+      service.id
+    end
+
+    # @return [String] The directory of the service related to this deployment
+    def directory
+      service.directory
+    end
+
+    # @returnn [Array[Hash]] The configs for the deployment
+    def configs
+      role.configs
     end
 
     # @return [String] The version of the deployment

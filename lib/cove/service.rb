@@ -19,6 +19,10 @@ module Cove
       name
     end
 
+    def directory
+      File.join(Cove.root, id)
+    end
+
     def labels
       EntityLabels.new({
         "cove.service" => name

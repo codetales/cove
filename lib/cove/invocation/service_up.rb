@@ -3,8 +3,6 @@ module Cove
     class ServiceUp
       include SSHKit::DSL
 
-      attr_reader :registry, :service
-
       # @param registry [Cove::Registry]
       # @param service [Cove::Service]
       def initialize(registry:, service:)
@@ -16,11 +14,12 @@ module Cove
       # @return nil
       def invoke
         service = @service # Need to set a local var to be able to reference it in the block below
+        registry = @registry
         roles = registry.roles_for_service(service)
 
         hosts = roles.flat_map(&:hosts).uniq.map(&:sshkit_host)
         on(hosts) do |host|
-          coordinator = Coordinator.new(self, service, roles)
+          coordinator = Coordinator.new(self, registry, service, roles)
           coordinator.run
         end
 
@@ -32,13 +31,16 @@ module Cove
       class Coordinator
         # @return
         attr_reader :connection
+        # @return [Cove::Registry]
+        attr_reader :registry
         # @return [Cove::Service]
         attr_reader :service
         # @return [Array<Cove::Role>]
         attr_reader :roles
 
-        def initialize(connection, service, roles)
+        def initialize(connection, registry, service, roles)
           @connection = connection
+          @registry = registry
           @service = service
           @roles = roles
         end

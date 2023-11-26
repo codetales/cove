@@ -23,6 +23,10 @@ loader.setup
 module Cove
   class Error < StandardError; end
 
+  def self.host_base_dir
+    "/var/lib/cove"
+  end
+
   def self.output=(output)
     @output = output
   end
@@ -31,9 +35,13 @@ module Cove
     @output || $stdout
   end
 
-  def self.init(config: ENV.fetch("COVE_CONFIG_DIR", "./"))
+  def self.init(config: root)
     @registry = nil
     Initialization.new(config, registry).perform
+  end
+
+  def self.root
+    ENV.fetch("COVE_CONFIG_DIR", "./")
   end
 
   def self.registry

@@ -9,7 +9,7 @@ module Cove
 
     def host_directory_path
       # TODO: Make the base path configurable
-      "/var/cove/env/#{deployment.service_name}/#{deployment.role_name}"
+      "#{Cove.host_base_dir}/env/#{deployment.service_name}/#{deployment.role_name}"
     end
 
     def host_file_path

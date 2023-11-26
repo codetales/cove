@@ -32,7 +32,7 @@ module Cove
     # @param roles [Array<Cove::Role>]
     # @return [Array<Cove::Host>]
     def hosts_for_roles(*roles)
-      roles.flatten.compact.flat_map(&:hosts).uniq.map { |hostname| hosts[hostname] }
+      roles.flatten.compact.flat_map(&:hosts).uniq
     end
 
     # @param service [Cove::Service]

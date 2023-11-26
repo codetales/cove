@@ -17,12 +17,12 @@ RSpec.describe Cove::Invocation::ServiceUp do
         desired_container = Cove::DesiredContainer.from(instance)
 
         stubs << stub_command(/docker image pull app:latest/).with_exit_status(0)
-        stubs << stub_command(/mkdir -p \/var\/cove\/env\/#{service.name}\/#{role.name}/)
+        stubs << stub_command(/mkdir -p #{File.join(Cove.host_base_dir, "env", service.name, role.name)}/)
         stubs << stub_command(/docker container create .* #{desired_container.name}.* --publish 8080:80 --mount type=volume,source=my-volume,target=\/data .* ping 8.8.8.8/).with_exit_status(0)
         stubs << stub_command(/docker container stop legacy_container1/).with_exit_status(0)
         stubs << stub_command(/docker container stop legacy_container2/).with_exit_status(0)
         stubs << stub_command(/docker container start #{desired_container.name}/).with_exit_status(0)
-        stubs << stub_upload("/var/cove/env/#{service.name}/#{role.name}/#{deployment.version}.env")
+        stubs << stub_upload(File.join(Cove.host_base_dir, "env", service.name, role.name, "#{deployment.version}.env"))
 
         invocation = described_class.new(registry: registry, service: service)
 
@@ -49,14 +49,14 @@ RSpec.describe Cove::Invocation::ServiceUp do
         desired_container2 = Cove::DesiredContainer.from(instance2)
 
         stubs << stub_command(/docker image pull app:latest/).with_exit_status(0)
-        stubs << stub_command(/mkdir -p \/var\/cove\/env\/#{service.name}\/#{role.name}/)
+        stubs << stub_command(/mkdir -p #{File.join(Cove.host_base_dir, "env", service.name, role.name)}/)
         stubs << stub_command(/docker container create .* #{desired_container1.name}/).with_exit_status(0)
         stubs << stub_command(/docker container create .* #{desired_container2.name}/).with_exit_status(0)
         stubs << stub_command(/docker container stop legacy_container1/).with_exit_status(0)
         stubs << stub_command(/docker container stop legacy_container2/).with_exit_status(0)
         stubs << stub_command(/docker container start #{desired_container1.name}/).with_exit_status(0)
         stubs << stub_command(/docker container start #{desired_container2.name}/).with_exit_status(0)
-        stubs << stub_upload("/var/cove/env/#{service.name}/#{role.name}/#{deployment.version}.env")
+        stubs << stub_upload(File.join(Cove.host_base_dir, "env", service.name, role.name, "#{deployment.version}.env"))
 
         invocation = described_class.new(registry: registry, service: service)
 
@@ -82,14 +82,14 @@ RSpec.describe Cove::Invocation::ServiceUp do
         desired_container2 = Cove::DesiredContainer.from(instance2)
 
         stubs << stub_command(/docker image pull app:latest/).with_exit_status(0)
-        stubs << stub_command(/mkdir -p \/var\/cove\/env\/#{service.name}\/#{role.name}/)
+        stubs << stub_command(/mkdir -p #{File.join(Cove.host_base_dir, "env", service.name, role.name)}/)
         stubs << stub_command(/docker container create .* #{desired_container1.name}.* --publish 8080:80/).with_exit_status(0)
         stubs << stub_command(/docker container create .* #{desired_container2.name}.* --publish 8081:80/).with_exit_status(0)
         stubs << stub_command(/docker container stop legacy_container1/).with_exit_status(0)
         stubs << stub_command(/docker container stop legacy_container2/).with_exit_status(0)
         stubs << stub_command(/docker container start #{desired_container1.name}/).with_exit_status(0)
         stubs << stub_command(/docker container start #{desired_container2.name}/).with_exit_status(0)
-        stubs << stub_upload("/var/cove/env/#{service.name}/#{role.name}/#{deployment.version}.env")
+        stubs << stub_upload(File.join(Cove.host_base_dir, "env", service.name, role.name, "#{deployment.version}.env"))
 
         invocation = described_class.new(registry: registry, service: service)
 

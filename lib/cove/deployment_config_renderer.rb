@@ -1,5 +1,5 @@
 module Cove
-  class DeploymentConfig
+  class DeploymentConfigRenderer
     attr_reader :registry, :deployment
 
     def initialize(registry, deployment)
@@ -7,7 +7,7 @@ module Cove
       @deployment = deployment
     end
 
-    def render(template)
+    def call(template)
       ERB.new(template, trim_mode: "-").result(binding)
     end
 

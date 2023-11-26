@@ -1,4 +1,4 @@
-RSpec.describe Cove::DeploymentConfigRenderer do
+RSpec.describe Cove::DeploymentConfig::Renderer do
   describe "#call" do
     it "renders the config" do
       host1 = Cove::Host.new(name: "host1", hostname: "192.168.1.1")

@@ -43,6 +43,8 @@ module Cove
         config["environment"] || {}
       end
 
+      # TODO: Should this be `definition`?
+      # Config is overloaded at this point
       def config
         @raw_service_config ||= YAML.safe_load(ERB.new(contents).result)
       end

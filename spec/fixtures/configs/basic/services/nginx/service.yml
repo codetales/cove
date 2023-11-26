@@ -18,3 +18,7 @@ roles:
       - type: port
         source: 80
         target: 80
+    configs:
+      postgres:
+        source: "configs/postgresql.conf"
+        target: "/etc/postgres/postgresql.conf"

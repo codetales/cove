@@ -23,6 +23,10 @@ module Cove
                   required(:target).filled(:string)
                 end
               end
+              optional(:configs).value(:hash) do
+                required(:source).filled(:string)
+                required(:target).filled(:string)
+              end
             end
           end
         end

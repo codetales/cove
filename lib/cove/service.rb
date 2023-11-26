@@ -20,7 +20,7 @@ module Cove
     end
 
     def directory
-      File.join(Cove.root, id)
+      File.join(Cove.root, "services", id)
     end
 
     def labels

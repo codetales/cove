@@ -18,7 +18,7 @@ module Cove
       end
 
       def directories
-        files.map(&:directory).uniq
+        files.map(&:directory).compact.uniq
       end
 
       def files

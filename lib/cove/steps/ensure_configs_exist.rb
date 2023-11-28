@@ -1,6 +1,8 @@
 module Cove
   module Steps
     class EnsureConfigsExist
+      include Callable
+
       attr_reader :connection, :deployment_config
 
       def initialize(connection, deployment_config)

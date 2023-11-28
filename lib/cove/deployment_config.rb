@@ -2,6 +2,8 @@ module Cove
   class DeploymentConfig
     def self.prepare(registry, deployment)
       entries = deployment.configs.map do |name, definition|
+        # TODO: Make sure we always symbolize keys when parsing the config
+        definition = definition.with_indifferent_access
         Entry.new(
           registry: registry, deployment: deployment,
           name: name, source: definition[:source],

@@ -7,6 +7,11 @@ module Cove
         @path = path
         @content = content
       end
+
+      def directory
+        dir = File.dirname(path)
+        dir unless dir == "."
+      end
     end
   end
 end

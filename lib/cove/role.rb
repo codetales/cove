@@ -23,7 +23,7 @@ module Cove
     # @return [String] The name of the service this role belongs to
     delegate :name, to: :service, prefix: true
 
-    def initialize(name:, service:, hosts:, container_count: 1, command: [], environment_variables: {}, ports: [], mounts: [], configs: [])
+    def initialize(name:, service:, hosts:, container_count: 1, command: [], environment_variables: {}, ports: [], mounts: [], configs: {})
       @name = name
       @service = service
       @hosts = hosts

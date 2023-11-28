@@ -22,7 +22,11 @@ module Cove
       end
 
       def files
-        @files ||= FileResolver.new.call(registry: @registry, deployment: @deployment, source: source)
+        @files ||= resolver.call(registry: @registry, deployment: @deployment, source: source)
+      end
+
+      def resolver
+        @resolver ||= FileResolver.new
       end
     end
   end

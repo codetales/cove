@@ -19,6 +19,14 @@ module SSHTestKit
       commander.register_upload_stub(stub)
       stub
     end
+
+    def allow_any_command!
+      commander.allow_any_command!
+    end
+
+    def allow_any_upload!
+      commander.allow_any_upload!
+    end
   end
 
   module StubHelpers
@@ -28,6 +36,14 @@ module SSHTestKit
 
     def stub_upload(destination)
       SSHTestKit.stub_upload(destination)
+    end
+
+    def allow_any_command!
+      SSHTestKit.allow_any_command!
+    end
+
+    def allow_any_upload!
+      SSHTestKit.allow_any_upload!
     end
   end
 
@@ -90,24 +106,42 @@ module SSHTestKit
     attr_reader :uploads, :commands
 
     def initialize
-      @command_stubs = CommandStubRegistry.new
-      @upload_stubs = UploadStubRegistry.new
+      @command_stubs = []
+      @upload_stubs = []
       @uploads = []
       @commands = []
     end
 
     def register_command_stub(stub)
-      @command_stubs.register(stub)
+      @command_stubs << stub
     end
 
     def register_upload_stub(stub)
-      @upload_stubs.register(stub)
+      @upload_stubs << stub
+    end
+
+    def allow_any_command!
+      @allow_any_command = true
+      default_command_stub
+    end
+
+    def allow_any_upload!
+      @allow_any_upload = true
+      default_upload_stub
+    end
+
+    def default_command_stub
+      @default_command_stub ||= CommandStub.new(nil)
+    end
+
+    def default_upload_stub
+      @default_upload_stub ||= UploadStub.new(nil)
     end
 
     def execute_command(host, command)
       commands << ExecutedCommand.new(host, command)
 
-      stub = @command_stubs.find_applicable(command, host)
+      stub = find_applicable_command_stub(command, host)
       stub.track_invokation!(host, command)
       stub
     end
@@ -115,9 +149,43 @@ module SSHTestKit
     def upload!(host, file, destination)
       uploads << Upload.new(host, file, destination)
 
-      stub = @upload_stubs.find_applicable(destination, host)
+      stub = find_applicable_upload_stub(destination, host)
       stub.track_invokation!(host, file, destination)
       stub
+    end
+
+    private
+
+    def find_applicable_command_stub(command, host)
+      stub = @command_stubs.find do |stub|
+        stub.applicable?(host, command)
+      end
+
+      return stub unless stub.nil?
+
+      if @allow_any_command
+        default_command_stub
+      else
+        raise("No stub found for #{command.to_command} on #{host}.\n\nRegistered stubs:\n#{formated_registered_command_stubs_list}\n ")
+      end
+    end
+
+    def formated_registered_command_stubs_list
+      @command_stubs.all(&:to_s).join("\n")
+    end
+
+    def find_applicable_upload_stub(destination, host)
+      stub = @upload_stubs.find do |stub|
+        stub.applicable?(host, destination)
+      end
+
+      return stub unless stub.nil?
+
+      if @allow_any_upload
+        default_upload_stub
+      else
+        raise("No stub found for upload to #{destination} on #{host}.\n\nRegistered stubs:\n#{registered_stubs_list}\n ")
+      end
     end
   end
 
@@ -229,34 +297,6 @@ module SSHTestKit
     end
   end
 
-  class CommandStubRegistry
-    def initialize
-      @stubs = []
-    end
-
-    def register(stub)
-      @stubs << stub
-    end
-
-    def find_applicable(command, host)
-      stub = @stubs.find do |stub|
-        stub.applicable?(host, command)
-      end
-
-      stub || raise("No stub found for #{command.to_command} on #{host}.\n\nRegistered stubs:\n#{registered_stubs_list}\n ")
-    end
-
-    private
-
-    def registered_stubs_list
-      @stubs.map(&:to_s).join("\n")
-    end
-
-    def matches_command?(stub, command)
-      CommandHelpers.matching?(command, stub.command)
-    end
-  end
-
   class ExecutedCommand
     def initialize(host, command)
       @host = host
@@ -279,30 +319,6 @@ module SSHTestKit
 
     def matches_command?(command)
       CommandHelpers.matching?(@command, command)
-    end
-  end
-
-  class UploadStubRegistry
-    def initialize
-      @stubs = []
-    end
-
-    def register(stub)
-      @stubs << stub
-    end
-
-    def find_applicable(destination, host)
-      stub = @stubs.find do |stub|
-        stub.applicable?(host, destination)
-      end
-
-      stub || raise("No stub found for upload to #{destination} on #{host}.\n\nRegistered stubs:\n#{registered_stubs_list}\n ")
-    end
-
-    private
-
-    def registered_stubs_list
-      @stubs.map(&:to_s).join("\n")
     end
   end
 

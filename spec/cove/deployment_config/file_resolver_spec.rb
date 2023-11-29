@@ -9,7 +9,7 @@ RSpec.describe Cove::DeploymentConfig::FileResolver do
 
         result = described_class.new.call(registry: registry, deployment: deployment, source: "config_with_subdirectories_and_files")
 
-        expect(result.map(&:path)).to eq(["config_with_subdirectories_and_files/abc/bar.conf", "config_with_subdirectories_and_files/foo.yml"])
+        expect(result.map(&:path)).to eq(["abc/bar.conf", "foo.yml"])
       end
     end
 

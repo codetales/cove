@@ -36,7 +36,7 @@ module Cove
 
     def entries
       @entries.map do |entry|
-        DeployableEntry.new(version: @version, host_path: @host_path, entry: entry)
+        DeployableEntry.new(host_path: @host_path, entry: entry)
       end
     end
   end

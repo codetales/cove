@@ -1,9 +1,8 @@
 module Cove
   class DeploymentConfig
     class DeployableEntry
-      def initialize(version:, host_path:, entry:)
+      def initialize(host_path:, entry:)
         @base_path = File.join(host_path, entry.name)
-        @version = version
         @entry = entry
       end
 

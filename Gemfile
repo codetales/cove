@@ -18,3 +18,5 @@ gem "byebug"
 gem "dry-validation"
 
 gem "mocktail"
+
+gem "pry"

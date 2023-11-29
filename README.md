@@ -1,8 +1,22 @@
 # Cove
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/cove`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Console
 
-TODO: Delete this and the text above, and describe your gem
+Start:
+
+```
+bin/console
+```
+
+Execute a step on a host
+
+```
+role = roles["nginx/web"]
+result = with_connection("host1") { |c| Cove::Steps::GetExistingContainerDetails.call(c, role) }
+result.select(&:running?).map(&:name)
+```
+
+`roles`, `services`, and `hosts` are forwarded to `Cove.registry`
 
 ## Installation
 

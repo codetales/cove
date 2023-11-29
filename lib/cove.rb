@@ -18,7 +18,12 @@ loader.inflector.inflect(
   "cli" => "CLI",
   "docker_cli" => "DockerCLI"
 )
+if ENV["COVE_CONSOLE_SESSION"] == "true"
+  loader.enable_reloading
+end
 loader.setup
+
+$zeitwerk_loader = loader
 
 module Cove
   class Error < StandardError; end
@@ -38,6 +43,10 @@ module Cove
   def self.init(config: root)
     @registry = nil
     Initialization.new(config, registry).perform
+  end
+
+  def self.farts
+    "smell"
   end
 
   def self.root

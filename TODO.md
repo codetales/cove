@@ -2,16 +2,14 @@
 
 ## DeploymentConfig
 
+- Wrap `Deployment` and `DeploymentConfig` into a package for versioning
 - Mount configs
 - Don't upload configs if they already exist
-- Use `service` instead of `deployment` for config generation
-- Make `config` part of a `deployment`?
+- Use `service` instead of `deployment` for config generation?
 - Tests should go through the whole flow and actually upload something
 
 ## Bugs
 
-- containers_to_replace includes containers_to_start if the container already exists
-- If the container count changes, it is mixing up stopping with replacing
 - Changing order of role/service definitions should not change the version
 
 ## Naming

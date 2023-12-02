@@ -1,21 +1,31 @@
 RSpec.describe Cove::Invocation::ServiceUp do
+  # TODO: Rewrite this test to be a full integration test, delete the others
+  # Instead test the individual steps
   describe "#invoke" do
     context "with no existing containers" do
       it "should start a container" do
         registry, service, role = setup_environment(service_name: "test", role_name: "web", image: "app:latest", command: ["ping", "8.8.8.8"], ports: [{"type" => "port", "source" => 8080, "target" => 80}], mounts: [{"type" => "volume", "source" => "my-volume", "target" => "/data"}])
         deployment = Cove::Deployment.new(role)
         instance = Cove::Instance.new(deployment, 1)
-        # TODO: This is invoked twice with different arguments. Should we stub them individually?
-        allow(Cove::Steps::GetExistingContainerDetails).to receive(:call).with(kind_of(SSHKit::Backend::Abstract), anything) {
+
+        desired_container = Cove::DesiredContainer.from(instance)
+
+        allow(Cove::Steps::GetExistingContainerDetails).to receive(:call).with(kind_of(SSHKit::Backend::Abstract), kind_of(Cove::Deployment)) {
           Cove::Runtime::ContainerList.new([
             Cove::Runtime::Container.new(id: "1234", name: "legacy_container1", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 1),
             Cove::Runtime::Container.new(id: "4567", name: "legacy_container2", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 2)
           ])
+        }.once
+
+        allow(Cove::Steps::GetExistingContainerDetails).to receive(:call).with(kind_of(SSHKit::Backend::Abstract), kind_of(Cove::Role)) {
+          Cove::Runtime::ContainerList.new([
+            Cove::Runtime::Container.new(id: "1111", name: "legacy_container1", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 1),
+            Cove::Runtime::Container.new(id: "1112", name: "legacy_container2", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 2),
+            Cove::Runtime::Container.new(id: "9991", name: desired_container.name, image: service.image, status: "created", service: service.name, role: role.name, version: deployment.version, index: 1)
+          ])
         }
 
         stubs = []
-        desired_container = Cove::DesiredContainer.from(instance)
-
         stubs << stub_command(/docker image pull app:latest/).with_exit_status(0)
         stubs << stub_command(/mkdir -p #{File.join(Cove.host_base_dir, "env", service.name, role.name)}/)
         stubs << stub_command(/docker container create .* #{desired_container.name}.* --publish 8080:80 --mount type=volume,source=my-volume,target=\/data .* ping 8.8.8.8/).with_exit_status(0)

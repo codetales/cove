@@ -16,38 +16,26 @@ module Cove
       end
 
       def call
-        stop_additional_containers
-        start_additional_containers
-        replace_containers
+        state_diff.instructions.each do |instruction|
+          case instruction[:action]
+          when :start
+            start_container(instruction[:container])
+          when :stop
+            stop_container(instruction[:container])
+          end
+        end
       end
 
       private
 
-      def stop_additional_containers
-        connection.info("Stopping additional #{state_diff.containers_to_stop.count} containers")
-        state_diff.containers_to_stop.each do |container|
-          cmd = Command::Builder.stop_container(container.name)
-          connection.execute(*cmd)
-        end
+      def start_container(container_name)
+        cmd = Command::Builder.start_container(container_name)
+        connection.execute(*cmd)
       end
 
-      def start_additional_containers
-        connection.info("Starting additional #{state_diff.containers_to_start.count} containers")
-        state_diff.containers_to_start.each do |container|
-          cmd = Command::Builder.start_container(container.name)
-          connection.execute(*cmd)
-        end
-      end
-
-      def replace_containers
-        connection.info("Replacing #{state_diff.containers_to_replace.count} containers")
-        state_diff.containers_to_replace.each do |replacement|
-          cmd = Command::Builder.stop_container(replacement[:old].name)
-          connection.execute(*cmd)
-
-          cmd = Command::Builder.start_container(replacement[:new].name)
-          connection.execute(*cmd)
-        end
+      def stop_container(container_name)
+        cmd = Command::Builder.stop_container(container_name)
+        connection.execute(*cmd)
       end
 
       def state_diff

@@ -1,4 +1,4 @@
-RSpec.describe Cove::StateDiff::Container do
+RSpec.describe Cove::StateDiff::ContainerStatus do
   def verify(current_containers, desired_containers, output)
     state_diff = described_class.new(current_containers, desired_containers)
     expect(state_diff.instructions).to eq(output)
@@ -199,7 +199,7 @@ RSpec.describe Cove::StateDiff::Container do
 
         expect do
           verify(current_containers, desired_containers, [])
-        end.to raise_error(Cove::StateDiff::Container::Error)
+        end.to raise_error(described_class::Error)
       end
     end
   end

@@ -2,15 +2,15 @@
 
 ## DeploymentConfig
 
-- Content is not rendering correctly (need to read file instead of passing filename)
-- Directory is there twice
+- Mount configs
 - Don't upload configs if they already exist
 - Use `service` instead of `deployment` for config generation
-- Make `config` part of a `deployment`
+- Make `config` part of a `deployment`?
 - Tests should go through the whole flow and actually upload something
 
 ## Bugs
 
+- containers_to_replace includes containers_to_start if the container already exists
 - If the container count changes, it is mixing up stopping with replacing
 - Changing order of role/service definitions should not change the version
 

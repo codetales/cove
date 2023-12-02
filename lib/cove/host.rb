@@ -1,7 +1,11 @@
 module Cove
   class Host
     # @return [String]
-    attr_reader :name, :user
+    attr_reader :name
+    # @return [String]
+    attr_reader :user
+    # @return [String]
+    attr_reader :sshkit_host
 
     # @param [String] name
     # @param [String] hostname
@@ -10,16 +14,12 @@ module Cove
       @name = name
       @hostname = hostname
       @user = user
+      @sshkit_host ||= SSHKit::Host.new(ssh_destination_string)
     end
 
     # @return [String]
     def id
       name
-    end
-
-    # @return [SSHKit::Host]
-    def sshkit_host
-      @sshkit_host ||= SSHKit::Host.new(ssh_destination_string)
     end
 
     # @return [String]

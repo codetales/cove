@@ -26,6 +26,7 @@ module Cove
             ports: role_config["ingress"],
             mounts: role_config["mounts"],
             environment_variables: role_environment,
+            configs: role_config["configs"],
             hosts: role_config["hosts"].map { |host_id| @host_registry[host_id] }
           )
         end
@@ -43,6 +44,8 @@ module Cove
         config["environment"] || {}
       end
 
+      # TODO: Should this be `definition`?
+      # Config is overloaded at this point
       def config
         @raw_service_config ||= YAML.safe_load(ERB.new(contents).result)
       end

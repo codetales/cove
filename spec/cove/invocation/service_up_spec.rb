@@ -2,6 +2,11 @@ RSpec.describe Cove::Invocation::ServiceUp do
   # TODO: Rewrite this test to be a full integration test, delete the others
   # Instead test the individual steps
   describe "#invoke" do
+    before do
+      allow_any_command!
+      allow_any_upload!
+    end
+
     context "with no existing containers" do
       it "should start a container" do
         registry, service, role = setup_environment(service_name: "test", role_name: "web", image: "app:latest", command: ["ping", "8.8.8.8"], ports: [{"type" => "port", "source" => 8080, "target" => 80}], mounts: [{"type" => "volume", "source" => "my-volume", "target" => "/data"}])

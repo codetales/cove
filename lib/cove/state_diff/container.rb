@@ -39,11 +39,24 @@ module Cove
 
         # If we wanted to implement other strategies we could do that here.
         # E.g. start first, stop all
-        return start_instructions if stoppable_containers.empty?
-        stop_instructions.zip(start_instructions).flatten.compact
+        if running_containers.size >= desired_containers.size
+          padded_start_instructions = post_pad(start_instructions, stop_instructions.size)
+          stop_instructions.zip(padded_start_instructions).flatten.compact
+        else
+          padded_stop_instructions = pre_pad(stop_instructions, start_instructions.size)
+          start_instructions.zip(padded_stop_instructions).flatten.compact
+        end
       end
 
       private
+
+      def pre_pad(array, size)
+        array + [nil] * (size - array.size)
+      end
+
+      def post_pad(array, size)
+        [nil] * (size - array.size) + array
+      end
 
       def verify!
         found_containers = desired_containers.map do |desired_container|
@@ -66,6 +79,10 @@ module Cove
         startable_containers.map do |container|
           {action: :start, container: container.name}
         end
+      end
+
+      def running_containers
+        current_containers.select(&:running?)
       end
 
       def startable_containers

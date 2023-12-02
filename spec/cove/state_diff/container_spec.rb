@@ -119,6 +119,50 @@ RSpec.describe Cove::StateDiff::Container do
       end
     end
 
+    context "when less older version are running than desired in total" do
+      it "starts a new container first" do
+        current_containers = [
+          build_running_container("v1", 1),
+          build_stopped_container("v1", 2),
+          build_stopped_container("v2", 1),
+          build_stopped_container("v2", 2)
+        ]
+        desired_containers = [
+          build_desired_container("v2", 1),
+          build_desired_container("v2", 2)
+        ]
+
+        output = [
+          {action: :start, container: current_containers[2].name},
+          {action: :stop, container: current_containers[0].name},
+          {action: :start, container: current_containers[3].name}
+        ]
+
+        verify(current_containers, desired_containers, output)
+      end
+    end
+
+    context "when more older version are running than desired in total" do
+      it "stops running container first" do
+        current_containers = [
+          build_running_container("v1", 1),
+          build_running_container("v1", 2),
+          build_stopped_container("v2", 1)
+        ]
+        desired_containers = [
+          build_desired_container("v2", 1)
+        ]
+
+        output = [
+          {action: :stop, container: current_containers[0].name},
+          {action: :stop, container: current_containers[1].name},
+          {action: :start, container: current_containers[2].name}
+        ]
+
+        verify(current_containers, desired_containers, output)
+      end
+    end
+
     context "when no containers are running" do
       it "starts all the desired containers" do
         current_containers = [

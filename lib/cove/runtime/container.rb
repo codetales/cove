@@ -39,6 +39,10 @@ module Cove
       def running?
         status == "running"
       end
+
+      def inspect
+        "Container #{id} #{name}> (#{status})"
+      end
     end
   end
 end

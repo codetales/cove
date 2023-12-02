@@ -1,448 +1,205 @@
 RSpec.describe Cove::StateDiff::ContainerStatus do
-  describe "#containers_to_replace" do
-    context "when no containers exist" do
-      it "returns an empty list" do
-        existing_containers = []
-        desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar"
-          )
-        ]
-        state_diff = described_class.new(existing_containers, desired_containers)
-
-        expect(state_diff.containers_to_replace).to eq([])
-      end
-    end
-
-    context "when the container already exists" do
-      it "returns an empty list" do
-        existing_containers = [
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc123",
-            index: 1
-          )
-        ]
-        desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 1
-          )
-        ]
-        state_diff = described_class.new(existing_containers, desired_containers)
-
-        expect(state_diff.containers_to_replace).to eq([])
-      end
-    end
-
-    context "when a container for a prior version exists" do
-      it "returns the containers to replace" do
-        existing_containers = [
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc122",
-            index: 1
-          )
-        ]
-        desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 1
-          )
-        ]
-        state_diff = described_class.new(existing_containers, desired_containers)
-
-        expect(state_diff.containers_to_replace).to eq([
-          {
-            old: existing_containers.first,
-            new: desired_containers.first
-          }
-        ])
-      end
-    end
-
-    context "when the containers for a prior version exist in a higher quantity" do
-      it "returns the containers to replace" do
-        existing_containers = [
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc122",
-            index: 1
-          ),
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc122",
-            index: 2
-          )
-        ]
-        desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 1
-          )
-        ]
-        state_diff = described_class.new(existing_containers, desired_containers)
-
-        expect(state_diff.containers_to_replace).to eq([
-          {
-            old: existing_containers.first,
-            new: desired_containers.first
-          }
-        ])
-      end
-    end
-
-    context "when the containers for a prior version exists in a lower quantity" do
-      it "returns the containers to replace" do
-        existing_containers = [
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc122",
-            index: 1
-          ),
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc122",
-            index: 2
-          )
-        ]
-        desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 1
-          ),
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 2
-          ),
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 3
-          )
-        ]
-        state_diff = described_class.new(existing_containers, desired_containers)
-
-        expect(state_diff.containers_to_replace).to eq([
-          {
-            old: existing_containers.first,
-            new: desired_containers.first
-          },
-          {
-            old: existing_containers.second,
-            new: desired_containers.second
-          }
-        ])
-      end
-    end
+  def verify(current_containers, desired_containers, output)
+    state_diff = described_class.new(current_containers, desired_containers)
+    expect(state_diff.instructions).to eq(output)
   end
 
-  describe "#containers_to_stop" do
-    context "when no containers exist" do
-      it "returns an empty list" do
-        existing_containers = []
-        desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar"
-          )
-        ]
-        state_diff = described_class.new(existing_containers, desired_containers)
-
-        expect(state_diff.containers_to_stop).to eq([])
-      end
-    end
-
-    context "when the containers already exist" do
-      it "returns an empty list" do
-        existing_containers = [
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc123",
-            index: 1
-          ),
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc123",
-            index: 2
-          )
-        ]
-        desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 1
-          ),
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 2
-          )
-        ]
-        state_diff = described_class.new(existing_containers, desired_containers)
-
-        expect(state_diff.containers_to_stop).to eq([])
-      end
-    end
-
-    context "when a container for a prior version exists" do
-      it "returns an empty list" do
-        existing_containers = [
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc122",
-            index: 1
-          )
-        ]
-        desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 1
-          )
-        ]
-        state_diff = described_class.new(existing_containers, desired_containers)
-
-        expect(state_diff.containers_to_stop).to eq([])
-      end
-    end
-
-    context "when the containers for a prior version exist in a higher quantity" do
-      it "returns the containers to stop" do
-        existing_containers = [
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc122",
-            index: 1
-          ),
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc122",
-            index: 2
-          ),
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc122",
-            index: 3
-          )
-        ]
-        desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 1
-          )
-        ]
-        state_diff = described_class.new(existing_containers, desired_containers)
-
-        expect(state_diff.containers_to_stop).to eq([existing_containers[1], existing_containers[2]])
-      end
-    end
-
-    context "when containers for a prior version exists in a higher quantity or aren't running" do
-      it "returns the container to stop" do
-        existing_containers = [
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc122",
-            index: 1
-          ),
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc122",
-            index: 2
-          ),
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "not running",
-            role: "app",
-            version: "abc122",
-            index: 3
-          )
-        ]
-        desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 1
-          )
-        ]
-        state_diff = described_class.new(existing_containers, desired_containers)
-
-        expect(state_diff.containers_to_stop).to eq([existing_containers[1]])
-      end
-    end
+  def build_desired_container(version, index)
+    Cove::DesiredContainer.new(
+      name: "foo-#{version}-#{index}",
+      image: "bar",
+      version: version,
+      index: index
+    )
   end
 
-  describe "#containers_to_start" do
-    context "when no containers exist" do
-      it "returns an empty list" do
-        existing_containers = []
-        desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar"
-          )
-        ]
-        state_diff = described_class.new(existing_containers, desired_containers)
+  def build_running_container(version, index)
+    build_current_container(version, index, "running")
+  end
 
-        expect(state_diff.containers_to_start).to eq([])
+  def build_stopped_container(version, index)
+    build_current_container(version, index, "stopped")
+  end
+
+  def build_current_container(version, index, status)
+    Cove::Runtime::Container.new(
+      id: 1000 + index,
+      name: "foo-#{version}-#{index}",
+      image: "bar",
+      role: "app",
+      status: status,
+      version: version,
+      index: index
+    )
+  end
+
+  describe "#instructions" do
+    context "with matching versions" do
+      context "when the there are more current containers than desired containers" do
+        it "returns the instructions to stop the current container with the highest index" do
+          current_containers = [
+            build_running_container("v1", 1),
+            build_running_container("v1", 2)
+          ]
+          desired_containers = [
+            build_desired_container("v1", 1)
+          ]
+
+          output = [
+            {action: :stop, container: current_containers[1].name}
+          ]
+
+          verify(current_containers, desired_containers, output)
+        end
+      end
+
+      context "when some containers are not running" do
+        it "returns the instructions to the start non running container" do
+          current_containers = [
+            build_running_container("v1", 1),
+            build_stopped_container("v1", 2)
+          ]
+          desired_containers = [
+            build_desired_container("v1", 1),
+            build_desired_container("v1", 2)
+          ]
+
+          output = [
+            {action: :start, container: desired_containers[1].name}
+          ]
+
+          verify(current_containers, desired_containers, output)
+        end
       end
     end
 
-    context "when the container already exists and is running" do
-      it "returns an empty list" do
-        existing_containers = [
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "running",
-            role: "app",
-            version: "abc123",
-            index: 1
-          )
+    context "when the older version is running" do
+      it "rolls all containers" do
+        current_containers = [
+          build_running_container("v1", 1),
+          build_running_container("v1", 2),
+          build_stopped_container("v2", 1),
+          build_stopped_container("v2", 2)
         ]
         desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 1
-          )
+          build_desired_container("v2", 1),
+          build_desired_container("v2", 2)
         ]
-        state_diff = described_class.new(existing_containers, desired_containers)
 
-        expect(state_diff.containers_to_start).to eq([])
+        output = [
+          {action: :stop, container: current_containers[0].name},
+          {action: :start, container: desired_containers[0].name},
+          {action: :stop, container: current_containers[1].name},
+          {action: :start, container: desired_containers[1].name}
+        ]
+
+        verify(current_containers, desired_containers, output)
       end
     end
 
-    context "when the container already exists and isn't running" do
-      it "returns the container to start" do
-        existing_containers = [
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "not running",
-            role: "app",
-            version: "abc123",
-            index: 1
-          )
+    context "when there is a mix of older and newer version running" do
+      it "rolls the older containers" do
+        current_containers = [
+          build_running_container("v1", 1),
+          build_stopped_container("v1", 2),
+          build_stopped_container("v2", 1),
+          build_running_container("v2", 2)
         ]
         desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 1
-          )
+          build_desired_container("v2", 1),
+          build_desired_container("v2", 2)
         ]
-        state_diff = described_class.new(existing_containers, desired_containers)
 
-        expect(state_diff.containers_to_start).to eq([desired_containers[0]])
+        output = [
+          {action: :stop, container: current_containers[0].name},
+          {action: :start, container: current_containers[2].name}
+        ]
+
+        verify(current_containers, desired_containers, output)
       end
     end
 
-    context "when a container for a prior version exists and isn't running" do
-      it "returns an empty list" do
-        existing_containers = [
-          Cove::Runtime::Container.new(
-            id: "123",
-            name: "foo",
-            image: "bar",
-            status: "not running",
-            role: "app",
-            version: "abc122",
-            index: 1
-          )
+    context "when less older version are running than desired in total" do
+      it "starts a new container first" do
+        current_containers = [
+          build_running_container("v1", 1),
+          build_stopped_container("v1", 2),
+          build_stopped_container("v2", 1),
+          build_stopped_container("v2", 2)
         ]
         desired_containers = [
-          Cove::DesiredContainer.new(
-            name: "foo",
-            image: "bar",
-            version: "abc123",
-            index: 1
-          )
+          build_desired_container("v2", 1),
+          build_desired_container("v2", 2)
         ]
-        state_diff = described_class.new(existing_containers, desired_containers)
 
-        expect(state_diff.containers_to_start).to eq([])
+        output = [
+          {action: :start, container: current_containers[2].name},
+          {action: :stop, container: current_containers[0].name},
+          {action: :start, container: current_containers[3].name}
+        ]
+
+        verify(current_containers, desired_containers, output)
+      end
+    end
+
+    context "when more older version are running than desired in total" do
+      it "stops running container first" do
+        current_containers = [
+          build_running_container("v1", 1),
+          build_running_container("v1", 2),
+          build_stopped_container("v2", 1)
+        ]
+        desired_containers = [
+          build_desired_container("v2", 1)
+        ]
+
+        output = [
+          {action: :stop, container: current_containers[0].name},
+          {action: :stop, container: current_containers[1].name},
+          {action: :start, container: current_containers[2].name}
+        ]
+
+        verify(current_containers, desired_containers, output)
+      end
+    end
+
+    context "when no containers are running" do
+      it "starts all the desired containers" do
+        current_containers = [
+          build_stopped_container("v1", 1),
+          build_stopped_container("v1", 2),
+          build_stopped_container("v2", 1),
+          build_stopped_container("v2", 2),
+          build_stopped_container("v3", 1),
+          build_stopped_container("v3", 2)
+        ]
+        desired_containers = [
+          build_desired_container("v2", 1),
+          build_desired_container("v2", 2)
+        ]
+
+        output = [
+          {action: :start, container: desired_containers[0].name},
+          {action: :start, container: desired_containers[1].name}
+        ]
+
+        verify(current_containers, desired_containers, output)
+      end
+    end
+
+    context "when a desired container does not exist" do
+      it "raises an error" do
+        current_containers = [
+          build_running_container("v1", 1)
+        ]
+        desired_containers = [
+          build_desired_container("v1", 1),
+          build_desired_container("v1", 2)
+        ]
+
+        expect do
+          verify(current_containers, desired_containers, [])
+        end.to raise_error(described_class::Error)
       end
     end
   end

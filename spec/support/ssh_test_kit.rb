@@ -171,7 +171,7 @@ module SSHTestKit
     end
 
     def formated_registered_command_stubs_list
-      @command_stubs.all(&:to_s).join("\n")
+      @command_stubs.map(&:to_s).join("\n")
     end
 
     def find_applicable_upload_stub(destination, host)

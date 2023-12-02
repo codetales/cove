@@ -58,8 +58,7 @@ module Cove
       def verify!
         missing_containers = desired_containers.reject do |desired_container|
           current_containers.any? do |current_container|
-            current_container.index == desired_container.index &&
-              current_container.version == desired_container.version
+            matching?(current_container, desired_container)
           end
         end
 
@@ -85,8 +84,7 @@ module Cove
       def startable_containers
         current_containers.reject(&:running?).select do |current_container|
           desired_containers.any? do |desired_container|
-            current_container.index == desired_container.index &&
-              current_container.version == desired_container.version
+            matching?(current_container, desired_container)
           end
         end
       end
@@ -94,10 +92,14 @@ module Cove
       def stoppable_containers
         current_containers.select(&:running?).select do |current_container|
           desired_containers.none? do |desired_container|
-            current_container.index == desired_container.index &&
-              current_container.version == desired_container.version
+            matching?(current_container, desired_container)
           end
         end
+      end
+
+      def matching?(container1, container2)
+        container1.index == container2.index &&
+          container1.version == container2.version
       end
     end
   end

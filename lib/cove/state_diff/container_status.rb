@@ -2,50 +2,52 @@ module Cove
   module StateDiff
     class ContainerStatus
       # @return [Array<Cove::Runtime::Container>]
-      attr_reader :existing_containers
+      attr_reader :current_containers
 
       # @return [Array<Cove::DesiredContainer>]
       attr_reader :desired_containers
 
-      # @param existing_containers [Array<Cove::Runtime::Container>]
+      # @param current_containers [Array<Cove::Runtime::Container>]
       # @param desired_containers [Array<Cove::DesiredContainer>]
-      def initialize(existing_containers, desired_containers)
-        @existing_containers = existing_containers
+      def initialize(current_containers, desired_containers)
+        @current_containers = current_containers
         @desired_containers = desired_containers
       end
 
       def containers_to_start
+        return [] unless desired_containers.count > current_containers.count
+
         desired_containers.select do |desired_container|
-          existing_containers.any? do |existing_container|
-            existing_container.index == desired_container.index &&
-              existing_container.version == desired_container.version &&
-              !existing_container.running?
+          current_containers.any? do |current_container|
+            current_container.index == desired_container.index &&
+              current_container.version == desired_container.version &&
+              !current_container.running?
           end
         end
       end
 
       def containers_to_replace
-        existing_containers.select do |existing_container|
+        current_containers.select do |current_container|
           desired_containers.any? do |desired_container|
-            existing_container.version != desired_container.version &&
-              existing_container.index == desired_container.index &&
-              existing_container.running?
+            current_container.version != desired_container.version &&
+              current_container.index == desired_container.index &&
+              current_container.running?
           end
-        end.map do |existing_container|
+        end.map do |current_container|
           {
-            old: existing_container,
+            old: current_container,
             new: desired_containers.find do |desired_container|
-              existing_container.index == desired_container.index
+              current_container.index == desired_container.index
             end
           }
         end
       end
 
       def containers_to_stop
-        existing_containers.reject do |existing_container|
+        current_containers.reject do |current_container|
           desired_containers.any? do |desired_container|
-            !existing_container.running? ||
-              (existing_container.index == desired_container.index)
+            !current_container.running? ||
+              (current_container.index == desired_container.index)
           end
         end
       end

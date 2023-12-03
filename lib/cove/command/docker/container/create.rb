@@ -13,7 +13,7 @@ module Cove
             end
 
             Array(mounts).each do |mount|
-              builder += ["--mount", "type=volume,source=#{mount["source"]},target=#{mount["target"]}"]
+              builder += ["--mount", "type=#{mount["type"] || "volume"},source=#{mount["source"]},target=#{mount["target"]}"]
             end
 
             Array(labels).each do |label|

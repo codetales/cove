@@ -1,26 +1,24 @@
 module Cove
   class Instance
-    # @return [Cove::Deployment]
-    attr_reader :deployment
+    # @return [Cove::Package]
+    attr_reader :package
     # @return [Integer]
     attr_reader :index
     # @return [Cove::Role]
-    delegate :role, to: :deployment
+    delegate :role, to: :package
     # @return [Cove::Service]
     delegate :service, to: :role
-    # @return [String] The version of the deployment
-    delegate :version, to: :deployment
+    # @return [String] The version of the package
+    delegate :version, to: :package
     # @return [String] The command to run in the container
     delegate :command, to: :role
-    # @return [Array<Hash>] The volumes to mount to the container
-    delegate :mounts, to: :role
     # @return [String] The image of the container
     delegate :image, to: :role
 
-    # @param deployment [Cove::Deployment] The deployment the container is part of
-    # @param index [Integer] The index of the container in the deployment
-    def initialize(deployment, index)
-      @deployment = deployment
+    # @param package [Cove::package] The package the container is part of
+    # @param index [Integer] The index of the container in the package
+    def initialize(package, index)
+      @package = package
       @index = index
     end
 
@@ -30,9 +28,16 @@ module Cove
 
     # @return [Cove::EntityLabels] The labels of the container
     def labels
-      deployment.labels.merge({
+      package.labels.merge({
         "cove.index" => index.to_s
       })
+    end
+
+    # @return [Array<Hash>] The volumes to mount to the container
+    def mounts
+      Array(role.mounts) + package.deployment_config.entries.map do |entry|
+        {"source" => entry.source, "target" => entry.target, "type" => "bind"}
+      end
     end
 
     # @return [Array<Hash>] The port mapping to run in the container

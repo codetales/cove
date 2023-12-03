@@ -17,6 +17,14 @@ module Cove
           DeployableFile.new(@base_path, file)
         end
       end
+
+      def source
+        @base_path
+      end
+
+      def target
+        @entry.target
+      end
     end
   end
 end

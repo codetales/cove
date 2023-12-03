@@ -5,9 +5,9 @@ module Cove
 
       attr_reader :connection, :deployment_config
 
-      def initialize(connection, deployment_config)
+      def initialize(connection, package)
         @connection = connection
-        @deployment_config = deployment_config
+        @deployment_config = package.deployment_config
       end
 
       def call

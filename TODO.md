@@ -16,6 +16,9 @@
 
 ## Naming
 
+- Is `Service` actually a `Stack` and `Role` is a `Service`? Is there an `Application` burried in there?
+  - `ServicePlacement` and `ServiceConfig` would be the input to the `Deployment`
+  - Or `Stack` and `Role`?
 - Remove `Command::Builder` in favor of embedding commands
 - Move `Command::Docker` to `Docker::CLI`
 - Rename `Invocation` to `Command`

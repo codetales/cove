@@ -9,7 +9,7 @@ module Cove
         image: instance.image,
         command: instance.command,
         labels: instance.labels,
-        environment_files: [EnvironmentFile.new(instance.deployment).host_file_path],
+        environment_files: [EnvironmentFile.new(instance.package).host_file_path],
         version: instance.version,
         index: instance.index,
         ports: instance.ports,

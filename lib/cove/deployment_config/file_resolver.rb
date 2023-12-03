@@ -17,7 +17,7 @@ module Cove
           Dir.glob(File.join(path, "**/*")).select do |file|
             File.file?(file)
           end.map do |file|
-            [file.gsub(/^#{path}\//, ""), renderer.call(File.read(file))]
+            [file.gsub(/^#{path}(\/)?/, ""), renderer.call(File.read(file))]
           end
         else
           [

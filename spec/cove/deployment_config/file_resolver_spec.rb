@@ -5,9 +5,7 @@ RSpec.describe Cove::DeploymentConfig::FileResolver do
         registry = Cove::Registry.new
         deployment = Mocktail.of(Cove::Deployment)
 
-        stubs { deployment.directory }.with { "spec/fixtures/deployment_configs/" }
-
-        result = described_class.new.call(registry: registry, deployment: deployment, source: "config_with_subdirectories_and_files")
+        result = described_class.new.call(registry: registry, deployment: deployment, source: "spec/fixtures/deployment_configs//config_with_subdirectories_and_files")
 
         expect(result.map(&:path)).to eq(["abc/bar.conf", "foo.yml"])
       end
@@ -18,9 +16,7 @@ RSpec.describe Cove::DeploymentConfig::FileResolver do
         registry = Cove::Registry.new
         deployment = Mocktail.of(Cove::Deployment)
 
-        stubs { deployment.directory }.with { "spec/fixtures/deployment_configs/" }
-
-        result = described_class.new.call(registry: registry, deployment: deployment, source: "config_with_subdirectories_and_files/abc/bar.conf")
+        result = described_class.new.call(registry: registry, deployment: deployment, source: "spec/fixtures/deployment_configs/config_with_subdirectories_and_files/abc/bar.conf")
 
         expect(result.map(&:path)).to eq(["bar.conf"])
       end
@@ -31,10 +27,8 @@ RSpec.describe Cove::DeploymentConfig::FileResolver do
         registry = Cove::Registry.new
         deployment = Mocktail.of(Cove::Deployment)
 
-        stubs { deployment.directory }.with { "spec/fixtures/deployment_configs/" }
-
         expect {
-          described_class.new.call(registry: registry, deployment: deployment, source: "does/not/exist.conf")
+          described_class.new.call(registry: registry, deployment: deployment, source: "spec/fixtures/deployment_configs/does/not/exist.conf")
         }.to raise_error(Cove::DeploymentConfig::FileResolver::FileNotFound)
       end
     end
@@ -44,10 +38,9 @@ RSpec.describe Cove::DeploymentConfig::FileResolver do
         registry = Cove::Registry.new
         deployment = Mocktail.of(Cove::Deployment)
 
-        stubs { deployment.directory }.with { "spec/fixtures/deployment_configs/" }
         stubs { deployment.service_name }.with { "STUBBED NAME" }
 
-        result = described_class.new.call(registry: registry, deployment: deployment, source: "renderable_config.txt")
+        result = described_class.new.call(registry: registry, deployment: deployment, source: "spec/fixtures/deployment_configs/renderable_config.txt")
         expect(result.first.content).to eq("Hello STUBBED NAME")
       end
     end

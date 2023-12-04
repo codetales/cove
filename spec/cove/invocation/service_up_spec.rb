@@ -10,12 +10,13 @@ RSpec.describe Cove::Invocation::ServiceUp do
     context "with no existing containers" do
       it "should start a container" do
         registry, service, role = setup_environment(service_name: "test", role_name: "web", image: "app:latest", command: ["ping", "8.8.8.8"], ports: [{"type" => "port", "source" => 8080, "target" => 80}], mounts: [{"type" => "volume", "source" => "my-volume", "target" => "/data"}])
-        deployment = Cove::Deployment.new(role)
-        instance = Cove::Instance.new(deployment, 1)
+
+        package = Cove::Package.build(registry, role)
+        instance = Cove::Instance.new(package, 1)
 
         desired_container = Cove::DesiredContainer.from(instance)
 
-        allow(Cove::Steps::GetExistingContainerDetails).to receive(:call).with(kind_of(SSHKit::Backend::Abstract), kind_of(Cove::Deployment)) {
+        allow(Cove::Steps::GetExistingContainerDetails).to receive(:call).with(kind_of(SSHKit::Backend::Abstract), kind_of(Cove::Package)) {
           Cove::Runtime::ContainerList.new([
             Cove::Runtime::Container.new(id: "1234", name: "legacy_container1", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 1),
             Cove::Runtime::Container.new(id: "4567", name: "legacy_container2", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 2)
@@ -26,7 +27,7 @@ RSpec.describe Cove::Invocation::ServiceUp do
           Cove::Runtime::ContainerList.new([
             Cove::Runtime::Container.new(id: "1111", name: "legacy_container1", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 1),
             Cove::Runtime::Container.new(id: "1112", name: "legacy_container2", image: service.image, status: "running", service: service.name, role: role.name, version: "fake", index: 2),
-            Cove::Runtime::Container.new(id: "9991", name: desired_container.name, image: service.image, status: "created", service: service.name, role: role.name, version: deployment.version, index: 1)
+            Cove::Runtime::Container.new(id: "9991", name: desired_container.name, image: service.image, status: "created", service: service.name, role: role.name, version: package.version, index: 1)
           ])
         }
 
@@ -37,7 +38,7 @@ RSpec.describe Cove::Invocation::ServiceUp do
         stubs << stub_command(/docker container stop legacy_container1/).with_exit_status(0)
         stubs << stub_command(/docker container stop legacy_container2/).with_exit_status(0)
         stubs << stub_command(/docker container start #{desired_container.name}/).with_exit_status(0)
-        stubs << stub_upload(File.join(Cove.host_base_dir, "env", service.name, role.name, "#{deployment.version}.env"))
+        stubs << stub_upload(File.join(Cove.host_base_dir, "env", service.name, role.name, "#{package.version}.env"))
 
         invocation = described_class.new(registry: registry, service: service)
 

@@ -1,23 +1,23 @@
 module Cove
   class EnvironmentFile
     # @return [Cove::Role]
-    attr_reader :deployment
+    attr_reader :package
 
-    def initialize(deployment)
-      @deployment = deployment
+    def initialize(package)
+      @package = package
     end
 
     def host_directory_path
       # TODO: Make the base path configurable
-      "#{Cove.host_base_dir}/env/#{deployment.service_name}/#{deployment.role_name}"
+      "#{Cove.host_base_dir}/env/#{package.service_name}/#{package.role_name}"
     end
 
     def host_file_path
-      "#{host_directory_path}/#{deployment.version}.env"
+      "#{host_directory_path}/#{package.version}.env"
     end
 
     def content
-      deployment.environment_variables.map do |key, value|
+      package.environment_variables.map do |key, value|
         "#{key}=#{value}"
       end.join("\n")
     end

@@ -6,10 +6,10 @@ module Cove
       # @return [SSHKit::Backend::Abstract]
       attr_reader :connection
       # @return [Cove::Service]
-      attr_reader :deployment
+      attr_reader :package
 
-      def initialize(connection, deployment)
-        @connection, @deployment = connection, deployment
+      def initialize(connection, package)
+        @connection, @package = connection, package
       end
 
       def call
@@ -26,12 +26,12 @@ module Cove
       end
 
       def existing_containers
-        Steps::GetExistingContainerDetails.call(connection, deployment)
+        Steps::GetExistingContainerDetails.call(connection, package)
       end
 
       def desired_containers
-        1.upto(deployment.container_count).map do |index|
-          instance = Instance.new(deployment, index)
+        1.upto(package.container_count).map do |index|
+          instance = Instance.new(package, index)
           DesiredContainer.from(instance)
         end
       end

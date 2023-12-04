@@ -10,7 +10,7 @@ module Cove
       attr_reader :entity
 
       # @param connection [SSHKit::Backend::Abstract]
-      # @param entity [Cove::Service, Cove::Role, Cove::Deployment, Cove::Instance]
+      # @param entity [Cove::Service, Cove::Role, Cove::Deployment, Cove::Instance, Cove::Package]
       def initialize(connection, entity)
         @connection, @entity = connection, entity
       end

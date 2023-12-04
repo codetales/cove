@@ -7,12 +7,12 @@ module Cove
       attr_reader :connection
       # @return [Cove::Service]
       attr_reader :role
-      # @return [Cove::Deployment]
-      attr_reader :deployment
+      # @return [Cove::package]
+      attr_reader :package
 
-      def initialize(connection, deployment)
-        @connection, @deployment = connection, deployment
-        @role = deployment.role
+      def initialize(connection, package)
+        @connection, @package = connection, package
+        @role = package.role
       end
 
       def call
@@ -48,7 +48,7 @@ module Cove
 
       def desired_containers
         1.upto(role.container_count).map do |index|
-          instance = Instance.new(deployment, index)
+          instance = Instance.new(package, index)
           DesiredContainer.from(instance)
         end
       end

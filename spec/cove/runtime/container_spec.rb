@@ -24,7 +24,7 @@ RSpec.describe Cove::Runtime::Container do
           },
           "Config" => {
             "Labels" => {
-              "cove.deployed_version" => "58da9973e60f0",
+              "cove.version" => "58da9973e60f0",
               "cove.index" => "1",
               "cove.role" => "web",
               "cove.service" => "nginx",
@@ -116,7 +116,7 @@ RSpec.describe Cove::Runtime::Container do
         },
         "Config" => {
           "Labels" => {
-            "cove.deployed_version" => "58da9973e60f0",
+            "cove.version" => "58da9973e60f0",
             "cove.index" => "1",
             "cove.role" => "web",
             "cove.service" => "nginx",

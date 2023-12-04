@@ -47,9 +47,7 @@ module Cove
 
     # @return [Cove::EntityLabels] The labels of the deployment
     def labels
-      role.labels.merge({
-        "cove.deployed_version" => version
-      })
+      role.labels
     end
 
     private

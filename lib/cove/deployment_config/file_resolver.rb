@@ -8,20 +8,19 @@ module Cove
       end
 
       def call(registry:, deployment:, source:)
-        path = File.join(deployment.directory, source)
+        raise FileNotFound.new(source) unless File.exist?(source)
+
         renderer = Renderer.new(registry, deployment)
 
-        raise FileNotFound.new(path) unless File.exist?(path)
-
-        if File.directory?(path)
-          Dir.glob(File.join(path, "**/*")).select do |file|
+        if File.directory?(source)
+          Dir.glob(File.join(source, "**/*")).select do |file|
             File.file?(file)
           end.map do |file|
-            [file.gsub(/^#{path}(\/)?/, ""), renderer.call(File.read(file))]
+            [file.gsub(/^#{source}(\/)?/, ""), renderer.call(File.read(file))]
           end
         else
           [
-            [File.basename(path), renderer.call(File.read(path))]
+            [File.basename(source), renderer.call(File.read(source))]
           ]
         end.map do |path, content|
           ConfigFile.new(path: path, content: content)

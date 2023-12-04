@@ -4,6 +4,7 @@ RSpec.describe Cove::Steps::EnsureConfigsExist do
       ssh_host = Cove::Host.new(name: "host1").sshkit_host
       connection = SSHTestKit::Backend.new(ssh_host)
 
+      package = Mocktail.of(Cove::Package)
       deployment_config = Mocktail.of(Cove::DeploymentConfig)
       file = Mocktail.of(Cove::DeploymentConfig::DeployableFile)
 

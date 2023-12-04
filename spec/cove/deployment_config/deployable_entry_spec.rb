@@ -25,4 +25,26 @@ RSpec.describe Cove::DeploymentConfig::Entry do
       expect(deployable_entry.files.map(&:host_path)).to eq(["/host/path/STUBBED_NAME/some/file.yml", "/host/path/STUBBED_NAME/other.yml"])
     end
   end
+
+  describe "#source" do
+    it "returns the mount path on the host" do
+      entry = Mocktail.of(Cove::DeploymentConfig::Entry)
+      stubs { entry.name }.with { ["STUBBED_NAME"] }
+      stubs { entry.base }.with { "some/file.yml" }
+
+      deployable_entry = Cove::DeploymentConfig::DeployableEntry.new(entry: entry, host_path: "/host/path")
+      expect(deployable_entry.source).to eq("/host/path/STUBBED_NAME/some/file.yml")
+    end
+  end
+
+  describe "#target" do
+    it "delegates to the entry" do
+      entry = Mocktail.of(Cove::DeploymentConfig::Entry)
+      stubs { entry.name }.with { ["STUBBED_NAME"] }
+      stubs { entry.target }.with { "/some/target" }
+
+      deployable_entry = Cove::DeploymentConfig::DeployableEntry.new(entry: entry, host_path: "/host/path")
+      expect(deployable_entry.target).to eq("/some/target")
+    end
+  end
 end

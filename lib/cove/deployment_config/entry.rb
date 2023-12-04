@@ -11,6 +11,16 @@ module Cove
         @target = target
       end
 
+      def base
+        # If the source is a file want to make sure to directly mount the file,
+        # otherwise we will try to mount the root of the source as a directory.
+        if File.file?(path)
+          File.basename(source)
+        else
+          "/"
+        end
+      end
+
       def digestables
         files.map do |file|
           [name, file.path, file.content]
@@ -27,6 +37,12 @@ module Cove
 
       def resolver
         @resolver ||= FileResolver.new
+      end
+
+      private
+
+      def path
+        File.join(@deployment.directory, @source)
       end
     end
   end

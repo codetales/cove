@@ -19,7 +19,7 @@ module Cove
       end
 
       def source
-        @base_path
+        File.join(@base_path, @entry.base)
       end
 
       def target

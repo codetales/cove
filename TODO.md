@@ -23,3 +23,7 @@
 - Move `Command::Docker` to `Docker::CLI`
 - Rename `Invocation` to `Command`
 - Add tests for the DockerCLI classes
+
+## Other
+
+- Use objects for `mounts` and `ports` instead of hashes

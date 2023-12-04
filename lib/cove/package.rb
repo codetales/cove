@@ -4,6 +4,12 @@ module Cove
 
     delegate_missing_to :deployment
 
+    def self.build(registry, role)
+      deployment = Deployment.new(role)
+      config = DeploymentConfig.prepare(registry, deployment)
+      new(deployment, config)
+    end
+
     def initialize(deployment, deployment_config)
       @deployment = deployment
       @deployment_config = deployment_config
@@ -15,7 +21,7 @@ module Cove
 
     def labels
       deployment.labels.merge({
-        "cove.deployed_version" => version
+        "cove.version" => version
       })
     end
   end

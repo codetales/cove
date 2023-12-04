@@ -6,8 +6,6 @@ module Cove
     attr_reader :index
     # @return [Cove::Role]
     delegate :role, to: :package
-    # @return [Cove::Service]
-    delegate :service, to: :role
     # @return [String] The version of the package
     delegate :version, to: :package
     # @return [String] The command to run in the container
@@ -23,7 +21,7 @@ module Cove
     end
 
     def name
-      "#{service.name}-#{role.name}-#{version}-#{index}"
+      "#{package.service_name}-#{package.role_name}-#{version}-#{index}"
     end
 
     # @return [Cove::EntityLabels] The labels of the container

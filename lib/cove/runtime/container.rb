@@ -12,7 +12,9 @@ module Cove
           status: container.dig("State", "Status"),
           service: container.dig("Config", "Labels", "cove.service"),
           role: container.dig("Config", "Labels", "cove.role"),
-          version: container.dig("Config", "Labels", "cove.deployed_version"),
+          version: container.dig("Config", "Labels", "cove.version"),
+          role_version: container.dig("Config", "Labels", "cove.role_version"),
+          config_version: container.dig("Config", "Labels", "cove.config_version"),
           index: container.dig("Config", "Labels", "cove.index"),
           health_status: container.dig("State", "Health", "Status")
         )
@@ -25,6 +27,8 @@ module Cove
       attribute :service, :string
       attribute :role, :string
       attribute :version, :string
+      attribute :role_version, :string
+      attribute :config_version, :string
       attribute :index, :integer
       attribute :health_status, :string
 

@@ -47,13 +47,11 @@ module Cove
 
         def run
           roles.each do |role|
-            deployment = Deployment.new(role)
-            config = DeploymentConfig.prepare(registry, deployment)
-            package = Package.new(deployment, config)
+            package = Package.build(registry, role)
 
             Steps::EnsureEnvironmentFileExists.call(connection, package)
-            Steps::EnsureConfigsExist.call(connection, package)
-            Steps::PullImage.call(connection, package)
+            Steps::EnsureConfigsExist.call(connection, package.deployment_config)
+            Steps::PullImage.call(connection, package.image)
             Steps::CreateMissingContainers.call(connection, package)
             Steps::RollContainers.call(connection, package)
           end

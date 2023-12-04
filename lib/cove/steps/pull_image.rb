@@ -3,16 +3,16 @@ module Cove
     class PullImage
       include Callable
 
-      attr_reader :connection, :package
+      attr_reader :connection, :image
 
-      def initialize(connection, package)
+      def initialize(connection, image)
         @connection = connection
-        @package = package
+        @image = image
       end
 
       def call
-        connection.info "Pulling image #{package.image}"
-        connection.execute(*Command::Builder.pull_image(package.image))
+        connection.info "Pulling image #{image}"
+        connection.execute(*Command::Builder.pull_image(image))
       end
     end
   end

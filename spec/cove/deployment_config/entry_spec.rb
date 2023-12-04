@@ -6,7 +6,8 @@ RSpec.describe Cove::DeploymentConfig::Entry do
       resolver = Mocktail.of_next(Cove::DeploymentConfig::FileResolver)
       mock = Mocktail.of(Cove::DeploymentConfig::ConfigFile)
 
-      stubs { resolver.call(registry: registry, deployment: deployment, source: "configs/postgresql.conf") }.with { [mock] }
+      stubs { deployment.directory }.with { "/some/path" }
+      stubs { resolver.call(registry: registry, deployment: deployment, source: "/some/path/configs/postgresql.conf") }.with { [mock] }
 
       entry = described_class.new(
         registry: registry,
@@ -30,7 +31,7 @@ RSpec.describe Cove::DeploymentConfig::Entry do
 
         allow(File).to receive(:file?).and_return(true)
         stubs { deployment.directory }.with { "/some/path" }
-        stubs { resolver.call(registry: registry, deployment: deployment, source: "configs/postgresql.conf") }.with { [file1] }
+        stubs { resolver.call(registry: registry, deployment: deployment, source: "/some/path/configs/postgresql.conf") }.with { [file1] }
 
         entry = described_class.new(
           registry: registry,
@@ -52,7 +53,7 @@ RSpec.describe Cove::DeploymentConfig::Entry do
         file1 = Cove::DeploymentConfig::ConfigFile.new(path: "postgresql.conf", content: "STUBBED CONTENT")
 
         stubs { deployment.directory }.with { "/some/path" }
-        stubs { resolver.call(registry: registry, deployment: deployment, source: "configs/postgres/") }.with { [file1] }
+        stubs { resolver.call(registry: registry, deployment: deployment, source: "/some/path/configs/postgres/") }.with { [file1] }
 
         entry = described_class.new(
           registry: registry,
@@ -75,7 +76,8 @@ RSpec.describe Cove::DeploymentConfig::Entry do
       file1 = Cove::DeploymentConfig::ConfigFile.new(path: "postgresql.conf", content: "STUBBED CONTENT")
       file2 = Cove::DeploymentConfig::ConfigFile.new(path: "pg_hba.conf", content: "MORE STUBBED CONTENT")
 
-      stubs { resolver.call(registry: registry, deployment: deployment, source: "configs/postgres/") }.with { [file1, file2] }
+      stubs { deployment.directory }.with { "/some/path" }
+      stubs { resolver.call(registry: registry, deployment: deployment, source: "/some/path/configs/postgres/") }.with { [file1, file2] }
 
       entry = described_class.new(
         registry: registry,
@@ -103,7 +105,8 @@ RSpec.describe Cove::DeploymentConfig::Entry do
         file1 = Cove::DeploymentConfig::ConfigFile.new(path: "postgresql.conf", content: "STUBBED CONTENT")
         file2 = Cove::DeploymentConfig::ConfigFile.new(path: "pg_hba.conf", content: "MORE STUBBED CONTENT")
 
-        stubs { resolver.call(registry: registry, deployment: deployment, source: "configs/postgres/") }.with { [file1, file2] }
+        stubs { deployment.directory }.with { "/some/path" }
+        stubs { resolver.call(registry: registry, deployment: deployment, source: "/some/path/configs/postgres/") }.with { [file1, file2] }
 
         entry = described_class.new(
           registry: registry,
@@ -126,7 +129,8 @@ RSpec.describe Cove::DeploymentConfig::Entry do
         file2 = Cove::DeploymentConfig::ConfigFile.new(path: "some/other.conf", content: "")
         file3 = Cove::DeploymentConfig::ConfigFile.new(path: "and/a/nested/file.conf", content: "")
 
-        stubs { resolver.call(registry: registry, deployment: deployment, source: "configs/something/") }.with { [file1, file2, file3] }
+        stubs { deployment.directory }.with { "/some/path" }
+        stubs { resolver.call(registry: registry, deployment: deployment, source: "/some/path/configs/something/") }.with { [file1, file2, file3] }
 
         entry = described_class.new(
           registry: registry,

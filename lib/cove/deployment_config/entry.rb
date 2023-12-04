@@ -14,8 +14,8 @@ module Cove
       def base
         # If the source is a file want to make sure to directly mount the file,
         # otherwise we will try to mount the root of the source as a directory.
-        if File.file?(path)
-          File.basename(source)
+        if File.file?(path_to_source)
+          File.basename(path_to_source)
         else
           "/"
         end
@@ -32,16 +32,16 @@ module Cove
       end
 
       def files
-        @files ||= resolver.call(registry: @registry, deployment: @deployment, source: source)
+        @files ||= resolver.call(registry: @registry, deployment: @deployment, source: path_to_source)
       end
+
+      private
 
       def resolver
         @resolver ||= FileResolver.new
       end
 
-      private
-
-      def path
+      def path_to_source
         File.join(@deployment.directory, @source)
       end
     end

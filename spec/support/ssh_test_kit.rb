@@ -96,7 +96,8 @@ module SSHTestKit
       end
     end
 
-    def upload!(file, destination)
+    def upload!(file, destination, _options = {})
+      # TODO: Allow testing for options
       SSHTestKit.commander.upload!(host, file, destination)
       nil
     end

@@ -2,11 +2,8 @@
 
 ## DeploymentConfig
 
-- Wrap `Deployment` and `DeploymentConfig` into a package for versioning
-- Mount configs
-- Permissions of files/directories
-- Use `service` instead of `deployment` for config generation?
 - Tests should go through the whole flow and actually upload something
+- Mount configs read only
 
 - Don't upload configs if they already exist
 

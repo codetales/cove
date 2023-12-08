@@ -1,4 +1,18 @@
 RSpec.describe Cove::DeploymentConfig do
+  describe "#base_directory" do
+    it "returns the base directory for the deployment config containing the service name and version" do
+      deployment = Mocktail.of(Cove::Deployment)
+      entry = Mocktail.of(Cove::DeploymentConfig::Entry)
+      stubs { deployment.service_name }.with { "STUBBED_SERVICE_NAME" }
+      stubs { entry.name }.with { "STUBBED_CONFIG_NAME" }
+      stubs { entry.directories }.with { ["/foo"] }
+
+      deployment_config = described_class.new(deployment: deployment, entries: [entry], version: "STUBBED_VERSION")
+
+      expect(deployment_config.base_directory).to eq("#{Cove.host_base_dir}/configs/STUBBED_SERVICE_NAME/STUBBED_VERSION")
+    end
+  end
+
   describe "#host_directories" do
     it "returns all the directories that need to be created" do
       deployment = Mocktail.of(Cove::Deployment)
@@ -9,11 +23,7 @@ RSpec.describe Cove::DeploymentConfig do
 
       deployment_config = described_class.new(deployment: deployment, entries: [entry], version: "STUBBED_VERSION")
 
-      puts deployment_config.host_directories.inspect
-
       expect(deployment_config.host_directories).to eq([
-        "#{Cove.host_base_dir}/configs/STUBBED_SERVICE_NAME",
-        "#{Cove.host_base_dir}/configs/STUBBED_SERVICE_NAME/STUBBED_VERSION",
         "#{Cove.host_base_dir}/configs/STUBBED_SERVICE_NAME/STUBBED_VERSION/STUBBED_CONFIG_NAME",
         "#{Cove.host_base_dir}/configs/STUBBED_SERVICE_NAME/STUBBED_VERSION/STUBBED_CONFIG_NAME/foo"
       ])

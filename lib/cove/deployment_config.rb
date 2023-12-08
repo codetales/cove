@@ -27,9 +27,13 @@ module Cove
       @host_path = ::File.join(@service_path, version)
     end
 
+    def base_directory
+      @host_path
+    end
+
     # TODO: Is `remote_directories` and `remote_files` more applicable?
     def host_directories
-      [@service_path, @host_path] + entries.flat_map(&:host_directories)
+      entries.flat_map(&:host_directories)
     end
 
     def files

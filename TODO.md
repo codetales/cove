@@ -1,5 +1,20 @@
 # TODO
 
+- Read logs
+- Healthchecks
+- Rollbacks
+- Rethink commands
+- Ingres/TLS via Traeffik or HAProxy?
+
+- Setup a config for a simple Rails app
+
+  - DB
+  - Secrets (1pass)
+  - ???
+
+- Use sha instead of tag
+  - Pull image deploying?
+
 ## DeploymentConfig
 
 - Tests should go through the whole flow and actually upload something

@@ -35,6 +35,17 @@ module Cove
         service = Cove.registry.services[service_name]
         Cove::Invocation::ServicePs.new(registry: Cove.registry, service: service).invoke
       end
+
+      desc "logs SERVICE/ROLE", "Show logs for role within service"
+      def logs(service_role)
+        role = Cove.registry.roles[service_role]
+        Cove::Invocation::ServiceLogs.new(registry: Cove.registry, role: role).invoke
+      rescue SignalException
+        # TODO: This is a hack to swallow the exception when pressing Ctrl+C
+        # It closes the connection but the `docker logs` command stays running
+        # on the host(s).
+        Kernel.exit(0)
+      end
     end
   end
 end

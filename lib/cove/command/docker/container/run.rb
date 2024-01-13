@@ -3,8 +3,8 @@ module Cove
     module Docker
       module Container
         class Run
-          def self.build(image:, name: nil, remove: false, detach: true, interactive: false, labels: {}, command: [], ports: [], extra_arguments: [])
-            builder = [:docker, "container", "run"]
+          def self.build(image:, name: nil, remove: false, detach: true, interactive: false, labels: {}, command: [], ports: [], mounts: [], environment_files: [], extra_arguments: [])
+            builder = ["docker", "container", "run"]
 
             builder += ["--name", name] if name.present?
 
@@ -12,8 +12,16 @@ module Cove
               builder += ["--publish", port_mapping["source"].to_s + ":" + port_mapping["target"].to_s]
             end
 
-            Hash(labels).each do |key, value|
-              builder += ["--label", "#{key}=#{value}"]
+            Array(mounts).each do |mount|
+              builder += ["--mount", "type=volume,source=\"#{mount["source"]}\",target=\"#{mount["target"]}\""]
+            end
+
+            Array(labels).each do |label|
+              builder += ["--label", label]
+            end
+
+            Array(environment_files).each do |environment_file|
+              builder += ["--env-file", environment_file]
             end
 
             builder << "--detach" if detach

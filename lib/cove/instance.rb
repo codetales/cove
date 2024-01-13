@@ -20,6 +20,7 @@ module Cove
       @index = index
     end
 
+    # @return [String]
     def name
       "#{package.service_name}-#{package.role_name}-#{version}-#{index}"
     end
@@ -27,7 +28,8 @@ module Cove
     # @return [Cove::EntityLabels] The labels of the container
     def labels
       package.labels.merge({
-        "cove.index" => index.to_s
+        "cove.index" => index.to_s,
+        "cove.type" => "deployed"
       })
     end
 

@@ -7,6 +7,12 @@ module Cove
         [:docker, "container", "start", *containers.flatten]
       end
 
+      # @param [String] container The name or id of the container to start
+      # return [Array] The command to start the container and attach the standard input, output, and error streams
+      def self.start_container_and_attach(container)
+        [:docker, "container", "start", "--attach", "-i", container]
+      end
+
       # @param [String] containers The name or id of the container(s) to stop
       # @param [Integer] time
       def self.stop_container(*containers, time: nil)
@@ -20,8 +26,8 @@ module Cove
 
       # @param [Cove::DesiredContainer] config
       # @return [Array] The command to create the container
-      def self.create_container(config)
-        Docker::Container::Create.build(image: config.image, name: config.name, labels: config.labels, command: config.command, environment_files: config.environment_files, ports: config.ports, mounts: config.mounts)
+      def self.create_container(config, remove: false, interactive: false)
+        Docker::Container::Create.build(image: config.image, name: config.name, remove: remove, interactive: interactive, labels: config.labels, command: config.command, environment_files: config.environment_files, ports: config.ports, mounts: config.mounts)
       end
 
       # @param [String] image The image to pull

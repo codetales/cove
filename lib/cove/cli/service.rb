@@ -46,6 +46,28 @@ module Cove
         # on the host(s).
         Kernel.exit(0)
       end
+
+      desc "run SERVICE with COMMANDS", "Run a container with custom commands for SERVICE"
+      option :role, type: :string
+      option :host, type: :string
+      def run_custom(service_name, command)
+        service = Cove.registry.services[service_name]
+        command = command.split
+
+        role = if options[:role]
+          Cove.registry.roles_for_service(service).bsearch { |x| x.name == options[:role] }
+        else
+          Cove.registry.roles_for_service(service).first
+        end
+
+        host = if options[:host]
+          Cove.registry.hosts[options[:host]]
+        else
+          role.hosts.first
+        end
+
+        Cove::Invocation::ServiceRun.new(registry: Cove.registry, service: service, custom_cmd: command, role: role, host: host).invoke
+      end
     end
   end
 end
